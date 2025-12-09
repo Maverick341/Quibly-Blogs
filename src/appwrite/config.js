@@ -123,6 +123,8 @@ export class Service {
             bucketId: conf.appwriteBucketId,
             fileId,
         });
+        // Construct preview URL directly using endpoint (getFilePreview is premium-only in latest Appwrite)
+        // return `${conf.appwriteUrl}/storage/buckets/${conf.appwriteBucketId}/files/${fileId}/preview`;
     }
 }
 

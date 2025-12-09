@@ -11,7 +11,8 @@ function PostForm({ post }) {
       defaultValues: {
         title: post?.title || "",
         slug: post?.slug || "",
-        content: post?.status || "active",
+        content: post?.content || "",
+        status: post?.status || "active"
       },
     });
 
@@ -43,6 +44,12 @@ function PostForm({ post }) {
       if (file) {
         const fileId = file.$id;
         data.featuredImage = fileId;
+        
+        if (!userData) {
+          console.error("User data not available");
+          return;
+        }
+
         const newDbPost = await postService.createPost({
           ...data,
           userId: userData.$id,
@@ -60,7 +67,7 @@ function PostForm({ post }) {
       return value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, "-")
+        .replace(/[^a-zA-Z\d\s]+/g, "-")
         .replace(/\s/g, "-");
 
     return "";
@@ -116,7 +123,7 @@ function PostForm({ post }) {
         {post && (
           <div className="w-full mb-4">
             <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
+              src={postService.getFilePreview(post.featuredImage)}
               alt={post.title}
               className="rounded-lg"
             />

@@ -1,6 +1,6 @@
 import React, { useId } from "react";
 
-const Input = React.forwardRef(function Input(
+function Input(
   { label, type = "text", className = "", ...props },
   ref
 ) {
@@ -22,9 +22,9 @@ const Input = React.forwardRef(function Input(
       />
     </div>
   );
-});
+}
 
-export default Input;
+export default React.forwardRef(Input);
 
 // In React 19, forwardRef is no longer necessary. Pass ref as a prop instead.
 

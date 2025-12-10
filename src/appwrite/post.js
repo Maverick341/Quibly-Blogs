@@ -118,11 +118,19 @@ export class Service {
         }
     }
 
+    getFileView(fileId) {
+      return this.bucket.getFileView({
+          bucketId: conf.appwriteBucketId,
+          fileId,
+      });
+    }
+
     getFilePreview(fileId) {
         return this.bucket.getFilePreview({
             bucketId: conf.appwriteBucketId,
             fileId,
         });
+        
         // Construct preview URL directly using endpoint (getFilePreview is premium-only in latest Appwrite)
         // return `${conf.appwriteUrl}/storage/buckets/${conf.appwriteBucketId}/files/${fileId}/preview`;
     }

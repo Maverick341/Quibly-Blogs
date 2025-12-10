@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Protected } from './Components';
+import { Protected, ErrorPage } from './Components';
 import Layout from './Layout';
 import Home from './Pages/Home';
 import Post from './Pages/Post';
@@ -14,6 +14,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "",

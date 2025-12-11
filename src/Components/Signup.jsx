@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import authService from "@/appwrite/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "@/store/authSlice";
 import { Button, Input, Logo } from ".";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import { useOAuth } from "@/hooks/useOAuth";
+import { OAuthProvider } from "appwrite";
 
 function Signup() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
+  const { handleOAuthSignup, error, setError } = useOAuth();
 
   const create = async (data) => {
     setError("");
@@ -30,6 +32,7 @@ function Signup() {
       setError(error.message);
     }
   };
+
   return (
     <div className="flex items-center justify-center">
       <div
@@ -73,10 +76,14 @@ function Signup() {
                     "Please avoid multiple consecutive spaces",
                   validFormat: (value) => {
                     const trimmed = value.trim();
-                    const words = trimmed.split(' ').filter(word => word.length > 0);
+                    const words = trimmed
+                      .split(" ")
+                      .filter((word) => word.length > 0);
                     if (words.length > 1) {
-                      return words.every(word => word.length >= 2) ||
-                        "Each name should be at least 2 characters long";
+                      return (
+                        words.every((word) => word.length >= 2) ||
+                        "Each name should be at least 2 characters long"
+                      );
                     }
                     return true;
                   },
@@ -126,6 +133,32 @@ function Signup() {
             </Button>
           </div>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-gray-100 px-2 text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* OAuth buttons*/}
+        <div className="mt-8">
+          <Button
+            onClick={() =>
+              handleOAuthSignup({
+                provider: OAuthProvider.Github,
+              })
+            }
+            className="w-full"
+          >
+            Continue with Github
+          </Button>
+          {/* Add more OAuth providers if needed */}
+        </div>
       </div>
     </div>
   );

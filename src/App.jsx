@@ -9,6 +9,7 @@ import AddPost from './Pages/AddPost';
 import AllPosts from './Pages/AllPosts';
 import Signup from './Pages/Signup';
 import Login from './Pages/Login';
+import AuthCallback from './Pages/AuthCallback';
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
         {
             path: "post/:slug",
             element: <Post />,
+        },
+        {
+            path: "auth/callback",
+            element: <AuthCallback />,
         },
     ],
   },

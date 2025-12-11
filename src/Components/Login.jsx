@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { login as authLogin } from "@/store/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, Logo } from ".";
 import authService from "@/appwrite/auth";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import { useOAuth } from "@/hooks/useOAuth";
+import { OAuthProvider } from "appwrite";
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { register, handleSubmit } = useForm();
-  const [error, setError] = useState();
+  const { handleOAuthSignup, error, setError } = useOAuth();
 
   const login = async (data) => {
     setError("");
@@ -27,6 +28,7 @@ function Login() {
       setError(error.message);
     }
   };
+
   return (
     <div className="flex items-center justify-center w-full">
       <div
@@ -93,10 +95,36 @@ function Login() {
             />
 
             <Button type="submit" className="w-full">
-                Sign in
+              Sign in
             </Button>
           </div>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-gray-100 px-2 text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* OAuth buttons*/}
+        <div className="mt-8">
+          <Button
+            onClick={() =>
+              handleOAuthSignup({
+                provider: OAuthProvider.Github,
+              })
+            }
+            className="w-full"
+          >
+            Continue with Github
+          </Button>
+          {/* Add more OAuth providers if needed */}
+        </div>
       </div>
     </div>
   );

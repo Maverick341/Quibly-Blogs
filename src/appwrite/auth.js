@@ -1,4 +1,4 @@
-import conf from "../conf/conf.js";
+import conf from "@/conf/conf";
 import { Client, Account, ID } from "appwrite";
 
 export class AuthService {
@@ -54,7 +54,38 @@ export class AuthService {
     try {
       return await this.account.deleteSessions();
     } catch (error) {
-      console.log("Appwrite serive :: logout :: error", error);
+      console.log("Appwrite service :: logout :: error", error);
+    }
+  }
+
+  async OAuth2SignUp({ provider }) {
+    try {
+      const baseUrl = window.location.origin;
+
+      return this.account.createOAuth2Token({ // use createOAuth2Session here
+        provider,
+        success: `${baseUrl}/`,
+        // success: `${baseUrl}/auth/callback`,
+        failure: `${baseUrl}/signup`
+      });
+    } catch (error) {
+      console.log("Appwrite service :: OAuth2SignUp :: error", error);
+      throw error;
+    }
+  }
+
+  async handleOAuth2Callback(userId, secret) {
+    try {
+      // Create a session using the OAuth2 token
+      await this.account.createSession({userId, secret});
+
+      // Get the user data
+      const user = await this.account.get();
+
+      return user;
+    } catch (error) {
+      console.log("Appwrite service :: handleOAuth2Callback :: error", error);
+      throw error;
     }
   }
 }

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import postService from "@/appwrite/post";
 import { Container, PostCard } from "@/Components";
+import { useDispatch, useSelector } from "react-redux";
+import { setPosts } from "@/store/postSlice";
 
 function AllPosts() {
-  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+  const posts = useSelector((state) => state.post.posts);
+
+  // const [posts, setPosts] = useState([]);
   useEffect(() => {
     postService.getPosts([]).then((posts) => {
       if (posts) {
-        setPosts(posts.rows);
+        dispatch(setPosts({ posts: posts.rows }));
+        // setPosts(posts.rows);
       }
     });
   }, []);

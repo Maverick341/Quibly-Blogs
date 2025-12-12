@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
 import postService from "@/appwrite/post";
 import { Container, PostCard, Button } from "@/Components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { setPosts } from "@/store/postSlice";
 
 function Home() {
-  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+  const posts = useSelector((state) => state.post.posts);
+
+  // const [posts, setPosts] = useState([]);
   const authStatus = useSelector((state) => state.auth.status);
 
   useEffect(() => {
     postService.getPosts([]).then((posts) => {
       if (posts) {
-        setPosts(posts.rows);
+        dispatch(setPosts({ posts: posts.rows }));
+        // setPosts(posts.rows);
       }
     });
   }, []);

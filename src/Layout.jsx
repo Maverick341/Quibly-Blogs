@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import authService from "./appwrite/auth";
 import { login, logout } from "./store/authSlice";
 import { Header, Footer } from "./Components";
 import "./App.css";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 function Layout() {
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const authStatus = useSelector((state) => state.auth.status);
+
+  const isLandingPage = location.pathname === "/"
 
   useEffect(() => {
     authService
@@ -23,19 +30,33 @@ function Layout() {
       .finally(() => setLoading(false));
   }, []);
 
-  
+  useEffect(() => {
+    if (!loading && authStatus && location.pathname === "/") {
+      navigate('/all-posts');
+    }
+  }, [loading, authStatus, location.pathname, navigate]);
 
-  return !loading ? (
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <Loader className="size-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const shouldShowHeader = !isLandingPage;
+
+  return (
     <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
       <div className='w-full block'>
-        <Header />
+        {shouldShowHeader && <Header />}
         <main>
-        <Outlet />
+          <Outlet />
         </main>
-        <Footer />
+        {shouldShowHeader && <Footer />}
       </div>
     </div>
-  ) : null;
+  );
 }
 
 export default Layout;

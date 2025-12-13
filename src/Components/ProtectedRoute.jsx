@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -18,5 +19,11 @@ export default function ProtectedRoute({ children, authentication = true }) {
 
     setLoader(false);
   }, [authStatus, navigate, authentication]);
-  return loader ? <h1>Loading...</h1> : <>{children}</>;
+  return loader ? (
+    <div className="flex items-center justify-center h-screen bg-background">
+      <Loader className="size-10 animate-spin text-primary" />
+    </div>
+  ) : (
+    <>{children}</>
+  );
 }

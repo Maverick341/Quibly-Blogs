@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Protected, ErrorPage } from './Components';
+import { ProtectedRoute, ErrorPage } from './Components';
 import Layout from './Layout';
 import Home from './Pages/Home';
 import Post from './Pages/Post';
@@ -24,44 +24,44 @@ const router = createBrowserRouter([
       {
         path: "login",
         element:(
-            <Protected authentication={false}>
+            <ProtectedRoute authentication={false}>
                 <Login />
-            </Protected>
+            </ProtectedRoute>
         )
       },
       {
             path: "signup",
             element: (
-                <Protected authentication={false}>
+                <ProtectedRoute authentication={false}>
                     <Signup />
-                </Protected>
+                </ProtectedRoute>
             ),
         },
         {
             path: "all-posts",
             element: (
-                <Protected authentication>
+                <ProtectedRoute authentication>
                     {" "}
                     <AllPosts />
-                </Protected>
+                </ProtectedRoute>
             ),
         },
         {
             path: "add-post",
             element: (
-                <Protected authentication>
+                <ProtectedRoute authentication>
                     {" "}
                     <AddPost />
-                </Protected>
+                </ProtectedRoute>
             ),
         },
         {
             path: "edit-post/:slug",
             element: (
-                <Protected authentication>
+                <ProtectedRoute authentication>
                     {" "}
                     <EditPost />
-                </Protected>
+                </ProtectedRoute>
             ),
         },
         {

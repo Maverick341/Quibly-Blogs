@@ -9,7 +9,7 @@ import Button from "./Button";
 import PostCard from "./PostCard";
 import Input from "./Input";
 import Signup from "./Signup";
-import Protected from "./AuthLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import RTE from "./RTE";
 import PostForm from "./Post-Form/PostForm";
 import ErrorBoundary from "./ErrorBoundary/ErrorBoundary";
@@ -27,7 +27,7 @@ export {
   PostCard,
   Input,
   Signup as SignupComponent,
-  Protected,
+  ProtectedRoute,
   RTE,
   PostForm,
   ErrorBoundary,

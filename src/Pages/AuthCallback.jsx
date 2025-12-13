@@ -29,7 +29,7 @@ function AuthCallback() {
           // Dispatch login to Redux
           dispatch(login({ userData: user }));
           // Redirect to home
-          navigate("/");
+          navigate("/all-posts");
         }
       } catch (error) {
         console.error("OAuth callback error:", error);

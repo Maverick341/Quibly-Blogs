@@ -11,11 +11,14 @@ function Layout() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const authStatus = useSelector((state) => state.auth.status);
+  // const navigate = useNavigate();
 
-  const isLandingPage = location.pathname === "/"
+  // const authStatus = useSelector((state) => state.auth.status);
+
+  const isLandingPage = location.pathname === "/";
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/signup";
 
   useEffect(() => {
     authService
@@ -30,13 +33,13 @@ function Layout() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (!loading && authStatus && location.pathname === "/") {
-      navigate('/all-posts');
-    }
-  }, [loading, authStatus, location.pathname, navigate]);
+  // useEffect(() => {
+  //   if (!loading && authStatus && location.pathname === "/") {
+  //     navigate('/all-posts');
+  //   }
+  // }, [loading, authStatus, location.pathname, navigate]);
 
-  if (loading) {
+  if (loading && location.pathname !== "/") {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <Loader className="size-10 animate-spin text-primary" />
@@ -44,7 +47,7 @@ function Layout() {
     );
   }
 
-  const shouldShowHeader = !isLandingPage;
+  const shouldShowHeader = !isLandingPage && !isAuthPage;
 
   return (
     <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>

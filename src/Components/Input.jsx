@@ -1,14 +1,17 @@
 import React, { useId } from "react";
 
 function Input(
-  { label, type = "text", className = "", ...props },
+  { label, type = "text", className = "", errors, ...props },
   ref
 ) {
   const id = useId();
   return (
-    <div className="w-full">
+    <div>
       {label && (
-        <label className="inline-block mb-1 pl-1" htmlFor={id}>
+        <label
+          className="block text-xs font-sans text-[#c5c3bf] mb-1.5"
+          htmlFor={id}
+        >
           {label}
         </label>
       )}
@@ -17,9 +20,15 @@ function Input(
         type={type}
         id={id}
         ref={ref}
-        className={`px-3 py-2 rounded-lg bg-white text-black outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full ${className}`}
+        className={`w-full px-3 py-2 text-sm bg-[#35383c] rounded-md text-[#e8e6e3] font-sans focus:outline-none focus:ring-1 focus:ring-[#a8956b] transition-colors ${className}`}
         {...props}
       />
+
+      {errors && (
+        <p className="mt-1 text-xs text-[#c77d7d] font-sans">
+          {errors.message}
+        </p>
+      )}
     </div>
   );
 }

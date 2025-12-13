@@ -2,10 +2,10 @@ import { useState } from "react";
 import authService from "@/appwrite/auth";
 
 export const useOAuth = () => {
-  const [error, setError] = useState("");
+  const [authError, setAuthError] = useState("");
 
   const handleOAuthSignup = async ({ provider }) => {
-    setError("");
+    setAuthError("");
     
     try {
       await authService.OAuth2SignUp({
@@ -13,9 +13,9 @@ export const useOAuth = () => {
       });
       // OAuth redirect happens here - session is created by Appwrite
     } catch (error) {
-      setError(error.message || "OAuth signup failed. Please try again.");
+      setAuthError(error.message || "OAuth signup failed. Please try again.");
     }
   };
 
-  return { handleOAuthSignup, error, setError };
+  return { handleOAuthSignup, authError, setAuthError };
 };

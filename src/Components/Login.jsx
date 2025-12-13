@@ -1,21 +1,36 @@
 import React from "react";
 import { login as authLogin } from "@/store/authSlice";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Input, Logo } from ".";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button, Input } from ".";
 import authService from "@/appwrite/auth";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useOAuth } from "@/hooks/useOAuth";
 import { OAuthProvider } from "appwrite";
+import GithubLogo from "@/assets/github-mark-white.svg";
 
-function Login() {
+function Login({ onToggle = () => {} }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
-  const { handleOAuthSignup, error, setError } = useOAuth();
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/signup";
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const { handleOAuthSignup, authError, setAuthError } = useOAuth();
 
   const login = async (data) => {
-    setError("");
+    setAuthError("");
     try {
       const session = await authService.login(data);
       if (session) {
@@ -25,53 +40,42 @@ function Login() {
         navigate("/");
       }
     } catch (error) {
-      setError(error.message);
+      setAuthError(error.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center w-full">
-      <div
-        className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}
-      >
-        <div className="mb-2 flex justify-center">
-          <span className="inline-block w-full max-w-[100px]">
-            <Logo width="100%" />
-          </span>
-        </div>
-        <h2 className="text-center text-2xl font-bold leading-tight">
-          Sign in to your account
+    <>
+      <div className="max-w-sm mx-auto lg:mx-0 rounded-lg p-6 bg-[#2a2d31]">
+        <h2 className="text-xl font-sans font-semibold mb-5 text-[#e8e6e3]">
+          Please log in
         </h2>
-        <p className="mt-2 text-center text-base text-black/60">
-          Don&apos;t have any account?&nbsp;
-          <Link
-            to="/signup"
-            className="font-medium text-primary transition-all duration-200 hover:underline"
-          >
-            Sign Up
-          </Link>
-        </p>
-        {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
-        <form onSubmit={handleSubmit(login)} className="mt-8">
-          <div className="space-y-5">
+
+        <form onSubmit={handleSubmit(login)} className="space-y-4">
+          {/* Email field */}
+          <div>
             <Input
-              label="Email: "
-              placeholder="Enter your email"
+              label="Email"
+              placeholder="you@example.com"
               type="email"
               {...register("email", {
                 required: true,
                 validate: {
-                  matchPatern: (value) =>
+                  matchPattern: (value) =>
                     /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
                     "Email address must be a valid address",
                 },
               })}
+              errors={errors.email}
             />
+          </div>
 
+          {/* Password field */}
+          <div>
             <Input
-              label="Password: "
-              placeholder="Enter your password"
+              label="Password"
               type="password"
+              placeholder="••••••••"
               {...register("password", {
                 required: true,
                 validate: {
@@ -92,22 +96,25 @@ function Login() {
                     "Password must contain at least one special character",
                 },
               })}
+              errors={errors.password}
             />
-
-            <Button type="submit" className="w-full">
-              Sign in
-            </Button>
           </div>
+
+          {/* Submit button */}
+          <Button
+            type="submit"
+            className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#9a8760] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer"
+          >
+            Log in
+          </Button>
         </form>
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full border-t border-[#c5c3bf] opacity-50" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-gray-100 px-2 text-gray-500">
-              Or continue with
-            </span>
+            <span className="bg-[#2a2d31] px-2 text-[#c5c3bf]">or</span>
           </div>
         </div>
 
@@ -119,14 +126,43 @@ function Login() {
                 provider: OAuthProvider.Github,
               })
             }
-            className="w-full"
+            className="px-4 py-2 text-sm bg-white/5 hover:bg-white/10 text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
-            Continue with Github
+            <img src={GithubLogo} alt="GitHub" className="h-5 w-5" />
+            <span>Continue with Github</span>
           </Button>
           {/* Add more OAuth providers if needed */}
         </div>
+
+        {/* Toggle to signup */}
+        {!isAuthPage ? (
+          <div className="mt-5 text-center text-xs font-sans text-[#c5c3bf]">
+            Don&apos;t have any account?&nbsp;
+            <button
+              onClick={onToggle}
+              className="text-xs font-sans text-[#a8956b] hover:text-[#9a8760] transition-colors cursor-pointer"
+            >
+              Sign up
+            </button>
+            {/* {" if not registered yet"} */}
+          </div>
+        ) : (
+          <div className="mt-5 text-center text-xs font-sans text-[#c5c3bf]">
+            Don&apos;t have any account?&nbsp;
+            <Link
+            to="/signup"
+              className="text-xs font-sans text-[#a8956b] hover:text-[#9a8760] transition-colors cursor-pointer"
+            >
+              Sign up
+            </Link>
+          </div>
+        )}
+
+        {authError && (
+          <p className="text-red-600 mt-8 text-center">{authError}</p>
+        )}
       </div>
-    </div>
+    </>
   );
 }
 

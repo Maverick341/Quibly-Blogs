@@ -64,8 +64,8 @@ export class AuthService {
 
       return this.account.createOAuth2Token({ // use createOAuth2Session here
         provider,
-        success: `${baseUrl}/`,
-        // success: `${baseUrl}/auth/callback`,
+        // success: `${baseUrl}/`,
+        success: `${baseUrl}/auth/callback`,
         failure: `${baseUrl}/signup`
       });
     } catch (error) {

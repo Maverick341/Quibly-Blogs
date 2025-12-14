@@ -34,7 +34,7 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#2a2d31] text-[#e8e6e3] font-sans">
+    <div className="min-h-screen bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3] font-sans">
       <Container>
         <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
           <div className="grid lg:grid-cols-3 gap-16 items-center">
@@ -43,16 +43,16 @@ function Home() {
               <div className="space-y-6 max-w-prose md:max-w-lg">
                 {/* Hero heading */}
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-sans font-bold text-[#e8e6e3] mb-4 text-balance">
+                  <h1 className="text-3xl lg:text-4xl font-sans font-bold text-[#1f2226] dark:text-[#e8e6e3] mb-4 text-balance">
                     Quibly
                   </h1>
                   {/* Description paragraph */}
-                  <p className="text-sm text-[#c5c3bf] leading-relaxed mb-6 text-pretty">
+                  <p className="text-sm text-[#4f5358] dark:text-[#c5c3bf] leading-relaxed mb-6 text-pretty">
                     Quibly is a calm, minimal space for writers and readers who
                     care about ideas more than noise.
                   </p>
                   {/* Philosophy paragraph */}
-                  <div className="text-sm text-[#c5c3bf] leading-relaxed space-y-3 text-pretty">
+                  <div className="text-sm text-[#4f5358] dark:text-[#c5c3bf] leading-relaxed space-y-3 text-pretty">
                     <p>
                       Built around clarity and focus, Quibly removes distractions
                       so your thoughts can take center stage.
@@ -64,11 +64,11 @@ function Home() {
                   </div>
                 </div>
                 {/* Inspirational closing section */}
-                <div className="pt-6 border-t border-[#3f4347]">
-                  <p className="text-base font-sans text-[#e8e6e3] leading-relaxed text-balance">
+                <div className="pt-6 border-t border-[#d5d2cc] dark:border-[#3f4347]">
+                  <p className="text-base font-sans text-[#1f2226] dark:text-[#e8e6e3] leading-relaxed text-balance">
                     Think deeply. Write simply. Let your ideas live.
                   </p>
-                  <p className="text-base font-sans text-[#a8956b] mt-2">
+                  <p className="text-base font-sans text-[#8c7a57] dark:text-[#a8956b] mt-2">
                     That's Quibly.
                   </p>
                 </div>

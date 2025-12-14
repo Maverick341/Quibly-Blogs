@@ -41,8 +41,8 @@ function Layout() {
 
   if (loading && location.pathname !== "/") {
     return (
-      <div className="flex items-center justify-center h-screen bg-background">
-        <Loader className="size-10 animate-spin text-primary" />
+      <div className="flex items-center justify-center h-screen bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
+        <Loader className="size-10 animate-spin text-[#a8956b] dark:text-[#a8956b]" />
       </div>
     );
   }
@@ -50,7 +50,7 @@ function Layout() {
   const shouldShowHeader = !isLandingPage && !isAuthPage;
 
   return (
-    <div className='min-h-screen flex flex-col bg-[#2a2d31]'>
+    <div className="min-h-screen flex flex-col bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
       {shouldShowHeader && <Header />}
       <main className='grow'>
         <Outlet />

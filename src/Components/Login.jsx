@@ -46,8 +46,8 @@ function Login({ onToggle = () => {} }) {
 
   return (
     <>
-      <div className="max-w-sm mx-auto lg:mx-0 rounded-lg p-6 bg-[#2a2d31]">
-        <h2 className="text-xl font-sans font-semibold mb-5 text-[#e8e6e3]">
+      <div className="max-w-sm mx-auto lg:mx-0 rounded-lg p-6 bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
+        <h2 className="text-xl font-sans font-semibold mb-5 text-[#1f2226] dark:text-[#e8e6e3]">
           Please log in
         </h2>
 
@@ -103,7 +103,7 @@ function Login({ onToggle = () => {} }) {
           {/* Submit button */}
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer"
+            className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer"
           >
             Log in
           </Button>
@@ -111,10 +111,10 @@ function Login({ onToggle = () => {} }) {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-[#c5c3bf] opacity-50" />
+            <span className="w-full border-t border-[#d5d2cc] dark:border-[#c5c3bf] opacity-50" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-[#2a2d31] px-2 text-[#c5c3bf]">or</span>
+            <span className="bg-[#f5f4f0] dark:bg-[#2a2d31] px-2 text-[#4f5358] dark:text-[#c5c3bf]">or</span>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ function Login({ onToggle = () => {} }) {
                 provider: OAuthProvider.Github,
               })
             }
-            className="px-4 py-2 text-sm bg-white/5 hover:bg-white/10 text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
+            className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
             <img src={GithubLogo} alt="GitHub" className="h-5 w-5" />
             <span>Continue with Github</span>
@@ -136,22 +136,22 @@ function Login({ onToggle = () => {} }) {
 
         {/* Toggle to signup */}
         {!isAuthPage ? (
-          <div className="mt-5 text-center text-xs font-sans text-[#c5c3bf]">
+          <div className="mt-5 text-center text-xs font-sans text-[#4f5358] dark:text-[#c5c3bf]">
             Don&apos;t have any account?&nbsp;
             <button
               onClick={onToggle}
-              className="text-xs font-sans text-[#a8956b] hover:text-[#9a8760] transition-colors cursor-pointer"
+              className="text-xs font-sans text-[#8c7a57] hover:text-[#7d6c4f] dark:text-[#a8956b] dark:hover:text-[#9a8760] transition-colors cursor-pointer"
             >
               Sign up
             </button>
             {/* {" if not registered yet"} */}
           </div>
         ) : (
-          <div className="mt-5 text-center text-xs font-sans text-[#c5c3bf]">
+          <div className="mt-5 text-center text-xs font-sans text-[#4f5358] dark:text-[#c5c3bf]">
             Don&apos;t have any account?&nbsp;
             <Link
             to="/signup"
-              className="text-xs font-sans text-[#a8956b] hover:text-[#9a8760] transition-colors cursor-pointer"
+              className="text-xs font-sans text-[#8c7a57] hover:text-[#7d6c4f] dark:text-[#a8956b] dark:hover:text-[#9a8760] transition-colors cursor-pointer"
             >
               Sign up
             </Link>

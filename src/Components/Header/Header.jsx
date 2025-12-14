@@ -16,7 +16,7 @@ function Header() {
   ];
 
   return (
-    <header className="py-4 bg-[#2a2d31] border-b border-[#3f4347]">
+    <header className="py-4 bg-[#eeebe4] text-[#1f2226] border-b border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
       <Container>
         <nav className="flex items-center">
           <div className="mr-4">
@@ -30,7 +30,7 @@ function Header() {
               <li key={item.name}>
                 <button
                   onClick={() => navigate(item.slug)}
-                  className="inline-block px-4 py-2 text-sm font-sans cursor-pointer text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150 ease-out rounded-md hover:bg-white/5"
+                  className="inline-block px-4 py-2 text-sm font-sans cursor-pointer text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
                 >
                   {item.name}
                 </button>

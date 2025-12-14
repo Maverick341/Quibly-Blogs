@@ -9,7 +9,7 @@ function Input(
     <div>
       {label && (
         <label
-          className="block text-[11px] font-sans text-[#b3b1ad] mb-1.5"
+          className="block text-[11px] font-sans text-[#6b6f75] dark:text-[#b3b1ad] mb-1.5"
           htmlFor={id}
         >
           {label}
@@ -20,12 +20,13 @@ function Input(
         type={type}
         id={id}
         ref={ref}
-        className={`w-full px-3 py-1.5 text-sm bg-[#35383c] rounded-md text-[#e8e6e3] font-sans focus:outline-none focus:ring-1 focus:ring-[#a8956b] transition-colors duration-150 ease-out ${className}`}
+        className={`w-full px-3 py-1.5 text-sm rounded-md font-sans focus:outline-none focus:ring-1 focus:ring-[#a8956b] transition-colors duration-150 ease-out 
+        bg-[#f0eeea] text-[#1f2226] placeholder-[#7a7f86] border border-[#d5d2cc] dark:bg-[#35383c] dark:text-[#e8e6e3] dark:placeholder-[#b3b1ad] dark:border-transparent ${className}`}
         {...props}
       />
 
       {errors && (
-        <p className="mt-1 text-xs text-[#c77d7d] font-sans">
+        <p className="mt-1 text-xs text-[#a04c4c] dark:text-[#c77d7d] font-sans">
           {errors.message}
         </p>
       )}

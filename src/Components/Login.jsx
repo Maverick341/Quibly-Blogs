@@ -103,7 +103,7 @@ function Login({ onToggle = () => {} }) {
           {/* Submit button */}
           <Button
             type="submit"
-            className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#9a8760] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer"
+            className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#2a2d31] cursor-pointer"
           >
             Log in
           </Button>
@@ -119,7 +119,7 @@ function Login({ onToggle = () => {} }) {
         </div>
 
         {/* OAuth buttons*/}
-        <div className="mt-8">
+        <div className="mt-10">
           <Button
             onClick={() =>
               handleOAuthSignup({

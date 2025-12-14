@@ -2,7 +2,7 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ProtectedRoute, ErrorPage } from "./Components";
 import Layout from "./Layout";
-import Home from "./Pages/Home";
+import Landing from "./Pages/Landing";
 import Post from "./Pages/Post";
 import EditPost from "./Pages/EditPost";
 import AddPost from "./Pages/AddPost";
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <ProtectedRoute authentication={false}>
-            <Home />
+            <Landing />
           </ProtectedRoute>
         ),
       },

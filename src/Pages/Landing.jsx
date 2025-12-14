@@ -40,7 +40,7 @@ function Home() {
           <div className="grid lg:grid-cols-3 gap-16 items-center">
             {/* Left Column - Content */}
             <div className="flex items-center min-h-[500px] ">
-              <div className="space-y-6">
+              <div className="space-y-6 max-w-prose md:max-w-lg">
                 {/* Hero heading */}
                 <div>
                   <h1 className="text-3xl lg:text-4xl font-sans font-bold text-[#e8e6e3] mb-4 text-balance">
@@ -76,11 +76,13 @@ function Home() {
             </div>
             {/* Middle Column - Auth Card */}
             <div className="lg:sticky lg:top-20">
-              {authMode === "login" ? (
-                <LoginComponent onToggle={toggleAuthMode} />
-              ) : (
-                <SignupComponent onToggle={toggleAuthMode} />
-              )}
+              <div className="w-full max-w-md md:max-w-sm lg:max-w-md">
+                {authMode === "login" ? (
+                  <LoginComponent onToggle={toggleAuthMode} />
+                ) : (
+                  <SignupComponent onToggle={toggleAuthMode} />
+                )}
+              </div>
             </div>
             {/* Right Column - Empty space */}
             <div className="hidden lg:block"></div>

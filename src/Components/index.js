@@ -14,6 +14,7 @@ import RTE from "./RTE";
 import PostForm from "./Post-Form/PostForm";
 import ErrorBoundary from "./ErrorBoundary/ErrorBoundary";
 import ErrorPage from "./ErrorBoundary/ErrorPage";
+import ThemeProvider from "./ThemeProvider";
 
 export {
   Header,
@@ -32,4 +33,5 @@ export {
   PostForm,
   ErrorBoundary,
   ErrorPage,
+  ThemeProvider,
 };

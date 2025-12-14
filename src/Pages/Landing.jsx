@@ -14,7 +14,7 @@ import { setPosts } from "@/store/postSlice";
 function Home() {
   const [authMode, setAuthMode] = useState("signup");
   const dispatch = useDispatch();
-  
+
   // const [posts, setPosts] = useState([]);
 
   // const posts = useSelector((state) => state.post.posts);
@@ -54,12 +54,13 @@ function Home() {
                   {/* Philosophy paragraph */}
                   <div className="text-sm text-[#4f5358] dark:text-[#c5c3bf] leading-relaxed space-y-3 text-pretty">
                     <p>
-                      Built around clarity and focus, Quibly removes distractions
-                      so your thoughts can take center stage.
+                      Built around clarity and focus, Quibly removes
+                      distractions so your thoughts can take center stage.
                     </p>
                     <p>
                       Write freely, publish effortlessly, and read without
-                      interruption — just words, exactly as they were meant to be.
+                      interruption — just words, exactly as they were meant to
+                      be.
                     </p>
                   </div>
                 </div>

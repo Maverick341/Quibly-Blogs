@@ -3,14 +3,14 @@ import authService from "@/appwrite/auth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login as authLogin } from "@/store/authSlice";
 import { Button, Input } from ".";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useOAuth } from "@/hooks/useOAuth";
 import { OAuthProvider } from "appwrite";
 import GithubLogo from "@/assets/github-mark-white.svg";
 import GithubLogoDark from "@/assets/github-mark.svg";
 
-function Signup({ onToggle = () => {} }) {
+function Signup({ onToggle = () => {}, isDarkMode = true }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -32,6 +32,9 @@ function Signup({ onToggle = () => {} }) {
   });
 
   const { handleOAuthSignup, authError, setAuthError } = useOAuth();
+
+  const mode = useSelector((state) => state.theme.mode);
+  isDarkMode = mode === "dark";
 
   const create = async (data) => {
     setAuthError("");
@@ -177,7 +180,9 @@ function Signup({ onToggle = () => {} }) {
             <span className="w-full border-t border-[#d5d2cc] dark:border-[#c5c3bf] opacity-50" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-[#f5f4f0] dark:bg-[#2a2d31] px-2 text-[#4f5358] dark:text-[#c5c3bf]">or</span>
+            <span className="bg-[#f5f4f0] dark:bg-[#2a2d31] px-2 text-[#4f5358] dark:text-[#c5c3bf]">
+              or
+            </span>
           </div>
         </div>
 
@@ -191,7 +196,11 @@ function Signup({ onToggle = () => {} }) {
             }
             className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
-            <img src={GithubLogo} alt="GitHub" className="h-5 w-5" />
+            <img
+              src={isDarkMode ? GithubLogo : GithubLogoDark}
+              alt="GitHub"
+              className="h-5 w-5"
+            />
             <span>Continue with Github</span>
           </Button>
           {/* Add more OAuth providers if needed */}
@@ -213,7 +222,7 @@ function Signup({ onToggle = () => {} }) {
           <div className="mt-5 text-center text-xs font-sans text-[#4f5358] dark:text-[#c5c3bf]">
             Already have an account?&nbsp;
             <Link
-            to="/login"
+              to="/login"
               className="text-xs font-sans text-[#8c7a57] hover:text-[#7d6c4f] dark:text-[#a8956b] dark:hover:text-[#9a8760] transition-colors cursor-pointer"
             >
               Log in

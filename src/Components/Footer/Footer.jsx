@@ -1,8 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import quiblyLogo from "@/assets/logo+title.png";
+import quiblyLogoDark from "@/assets/logo+title.png";
+import quiblyLogo from "@/assets/logo+title-dark.png";
+import { useSelector } from "react-redux";
 
 function Footer() {
+  const mode = useSelector((state) => state.theme.mode);
+  const isDarkMode = mode === "dark";
+
   return (
     <footer className="bg-[#eeebe4] text-[#1f2226] border-t border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -11,11 +16,9 @@ function Footer() {
           {/* Logo and Description */}
           <div className="lg:col-span-1 flex flex-col">
             <div className="mb-6 flex justify-start">
-              <Link
-                to="/all-posts"
-              >
+              <Link to="/all-posts">
                 <img
-                  src={quiblyLogo}
+                  src={isDarkMode ? quiblyLogoDark : quiblyLogo}
                   alt="Quibly"
                   className="h-20 w-auto object-contain cursor-pointer"
                 />

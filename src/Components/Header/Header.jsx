@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Logo, LogoutBtn } from "..";
+import ThemeToggle from "@/Components/ToggleThemeButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -39,6 +40,11 @@ function Header() {
             {authStatus && (
               <li>
                 <LogoutBtn />
+              </li>
+            )}
+            {authStatus && (
+              <li className="mr-1">
+                <ThemeToggle />
               </li>
             )}
           </ul>

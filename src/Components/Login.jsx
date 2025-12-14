@@ -4,12 +4,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Input } from ".";
 import authService from "@/appwrite/auth";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useOAuth } from "@/hooks/useOAuth";
 import { OAuthProvider } from "appwrite";
 import GithubLogo from "@/assets/github-mark-white.svg";
+import GithubLogoDark from "@/assets/github-mark.svg";
 
-function Login({ onToggle = () => {} }) {
+function Login({ onToggle = () => {}, isDarkMode = true }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -28,6 +29,9 @@ function Login({ onToggle = () => {} }) {
     },
   });
   const { handleOAuthSignup, authError, setAuthError } = useOAuth();
+
+  const mode = useSelector((state) => state.theme.mode);
+  isDarkMode = mode === "dark";
 
   const login = async (data) => {
     setAuthError("");
@@ -128,7 +132,7 @@ function Login({ onToggle = () => {} }) {
             }
             className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
-            <img src={GithubLogo} alt="GitHub" className="h-5 w-5" />
+            <img src={isDarkMode ? GithubLogo : GithubLogoDark} alt="GitHub" className="h-5 w-5" />
             <span>Continue with Github</span>
           </Button>
           {/* Add more OAuth providers if needed */}

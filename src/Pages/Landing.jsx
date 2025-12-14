@@ -8,7 +8,7 @@ import {
   SignupComponent,
 } from "@/Components";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { setPosts } from "@/store/postSlice";
 
 function Home() {

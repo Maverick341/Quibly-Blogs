@@ -50,14 +50,12 @@ function Layout() {
   const shouldShowHeader = !isLandingPage && !isAuthPage;
 
   return (
-    <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
-      <div className='w-full block'>
-        {shouldShowHeader && <Header />}
-        <main>
-          <Outlet />
-        </main>
-        {shouldShowHeader && <Footer />}
-      </div>
+    <div className='min-h-screen flex flex-col bg-[#2a2d31]'>
+      {shouldShowHeader && <Header />}
+      <main className='grow'>
+        <Outlet />
+      </main>
+      {shouldShowHeader && <Footer />}
     </div>
   );
 }

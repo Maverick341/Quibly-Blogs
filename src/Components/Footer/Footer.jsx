@@ -1,142 +1,158 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Logo } from "..";
+import quiblyLogo from "@/assets/logo+title.png";
 
 function Footer() {
   return (
-    <section className="relative overflow-hidden py-10 bg-gray-400 border border-t-2 border-t-black">
-      <div className="relative z-10 mx-auto max-w-7xl px-4">
-        <div className="-m-6 flex flex-wrap">
-          <div className="w-full p-6 md:w-1/2 lg:w-5/12">
-            <div className="flex h-full flex-col justify-between">
-              <div className="mb-4 inline-flex items-center">
-                <Logo width="100px" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">
-                  &copy; Copyright 2023. All Rights Reserved by DevUI.
-                </p>
-              </div>
+    <footer className="bg-[#2a2d31] border-t border-[#3f4347]">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Logo and Description */}
+          <div className="lg:col-span-1 flex flex-col">
+            <div className="mb-6 flex justify-start">
+              <Link
+                to="/all-posts"
+              >
+                <img
+                  src={quiblyLogo}
+                  alt="Quibly"
+                  className="h-20 w-auto object-contain cursor-pointer"
+                />
+              </Link>
             </div>
+            <p className="text-sm text-[#c5c3bf] leading-relaxed max-w-xs">
+              A calm, minimal space for writers and readers who care about ideas
+              more than noise.
+            </p>
           </div>
-          <div className="w-full p-6 md:w-1/2 lg:w-2/12">
-            <div className="h-full">
-              <h3 className="tracking-px mb-9  text-xs font-semibold uppercase text-gray-500">
-                Company
-              </h3>
-              <ul>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Features
-                  </Link>
-                </li>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Affiliate Program
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Press Kit
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
+          {/* Company Links */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#e8e6e3] mb-4 uppercase tracking-wide">
+              Company
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Affiliate Program
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Press Kit
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div className="w-full p-6 md:w-1/2 lg:w-2/12">
-            <div className="h-full">
-              <h3 className="tracking-px mb-9  text-xs font-semibold uppercase text-gray-500">
-                Support
-              </h3>
-              <ul>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Account
-                  </Link>
-                </li>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Help
-                  </Link>
-                </li>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Customer Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
+          {/* Support Links */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#e8e6e3] mb-4 uppercase tracking-wide">
+              Support
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Account
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Help
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Customer Support
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div className="w-full p-6 md:w-1/2 lg:w-3/12">
-            <div className="h-full">
-              <h3 className="tracking-px mb-9  text-xs font-semibold uppercase text-gray-500">
-                Legals
-              </h3>
-              <ul>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Terms &amp; Conditions
-                  </Link>
-                </li>
-                <li className="mb-4">
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                    to="/"
-                  >
-                    Licensing
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
+          {/* Legals Links */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#e8e6e3] mb-4 uppercase tracking-wide">
+              Legals
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-[#c5c3bf] hover:text-[#a8956b] transition-colors duration-150"
+                >
+                  Licensing
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* Bottom Bar - Full Width */}
+      <div className="bg-[#23262a] border-t border-[#3f4347]">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <p className="text-sm text-[#c5c3bf] text-center">
+            &copy; {new Date().getFullYear()} Quibly. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 }
 

@@ -1,4 +1,4 @@
-import conf from "../conf/conf.js";
+import conf from "@/conf/conf.js";
 import { Client, TablesDB, Storage, Query, ID } from "appwrite";
 
 export class Service {
@@ -18,7 +18,7 @@ export class Service {
     try {
       return await this.databases.createRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteTableId,
+        tableId: conf.appwriteArticlesTableId,
         rowId: slug,
         data: {
           title,
@@ -37,7 +37,7 @@ export class Service {
     try {
       return await this.databases.updateRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteTableId,
+        tableId: conf.appwriteArticlesTableId,
         rowId: slug,
         data: {
           title,
@@ -55,7 +55,7 @@ export class Service {
     try {
       await this.databases.deleteRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteTableId,
+        tableId: conf.appwriteArticlesTableId,
         rowId: slug,
       });
 
@@ -70,7 +70,7 @@ export class Service {
     try {
       return await this.databases.getRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteTableId,
+        tableId: conf.appwriteArticlesTableId,
         rowId: slug,
       });
     } catch (error) {
@@ -82,7 +82,7 @@ export class Service {
     try {
       return await this.databases.listRows({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteTableId,
+        tableId: conf.appwriteArticlesTableId,
         queries,
       });
     } catch (error) {
@@ -92,49 +92,49 @@ export class Service {
   }
 
   // file upload service
-    async uploadFile(file) {
-        try {
-            return await this.bucket.createFile({
-                bucketId: conf.appwriteBucketId,
-                fileId: ID.unique(),
-                file,
-            });
-        } catch (error) {
-            console.log("Appwrite service :: uploadFile :: error ", error);
-            return null;
-        }
-    }
-
-    async deleteFile(fileId) {
-        try {
-            await this.bucket.deleteFile({
-                bucketId: conf.appwriteBucketId,
-                fileId,
-            });
-            return true;
-        } catch (error) {
-            console.log("Appwrite service :: deleteFile :: error ", error);
-            return false;
-        }
-    }
-
-    getFileView(fileId) {
-      return this.bucket.getFileView({
-          bucketId: conf.appwriteBucketId,
-          fileId,
+  async uploadFile(file) {
+    try {
+      return await this.bucket.createFile({
+        bucketId: conf.appwriteBucketId,
+        fileId: ID.unique(),
+        file,
       });
+    } catch (error) {
+      console.log("Appwrite service :: uploadFile :: error ", error);
+      return null;
     }
+  }
 
-    getFilePreview(fileId) {
-        return this.bucket.getFilePreview({
-            bucketId: conf.appwriteBucketId,
-            fileId,
-        });
-        
-        // Construct preview URL directly using endpoint (getFilePreview is premium-only in latest Appwrite)
-        // return `${conf.appwriteUrl}/storage/buckets/${conf.appwriteBucketId}/files/${fileId}/preview`;
+  async deleteFile(fileId) {
+    try {
+      await this.bucket.deleteFile({
+        bucketId: conf.appwriteBucketId,
+        fileId,
+      });
+      return true;
+    } catch (error) {
+      console.log("Appwrite service :: deleteFile :: error ", error);
+      return false;
     }
+  }
+
+  getFileView(fileId) {
+    return this.bucket.getFileView({
+      bucketId: conf.appwriteBucketId,
+      fileId,
+    });
+  }
+
+  getFilePreview(fileId) {
+    return this.bucket.getFilePreview({
+      bucketId: conf.appwriteBucketId,
+      fileId,
+    });
+
+    // Construct preview URL directly using endpoint (getFilePreview is premium-only in latest Appwrite)
+    // return `${conf.appwriteUrl}/storage/buckets/${conf.appwriteBucketId}/files/${fileId}/preview`;
+  }
 }
 
-const service = new Service();
-export default service;
+const postService = new Service();
+export default postService;

@@ -2,7 +2,13 @@ import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 
-export default function RTE({ name, control, label, defaultValue = "" }) {
+export default function RTE({
+  label,
+  name,
+  control,
+  editorRef,
+  defaultValue = "",
+}) {
   return (
     <div className="w-full">
       {label && <label className="inline-block mb-1 pl-1">{label}</label>}
@@ -12,7 +18,12 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey='c9a972lgnm03qaifqy5vvfggjim4gu1a95684ucg8i31uc08'
+            tinymceScriptSrc="/node_modules/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            apiKey="2yuwar8xgmih8cez9oi06kcwvx3sk20hx3z8af2ovt8u0da6"
+            onInit={(evt, editor) => {
+              editorRef.current = editor; 
+            }}
             initialValue={defaultValue}
             init={{
               initialValue: defaultValue,

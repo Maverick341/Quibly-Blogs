@@ -24,7 +24,15 @@ function PostForm({ post }) {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const editorRef = useRef(null);
+
   const userData = useSelector((state) => state.auth.userData);
+
+  const handlePreview = () => {
+    if (editorRef.current) {
+      editorRef.current.execCommand("mcePreview");
+    }
+  };
 
   // Handle image preview for new posts
   const imageInput = watch("image");
@@ -122,12 +130,13 @@ function PostForm({ post }) {
         {/* Buttons and Slug - Simple layout without navbar */}
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
-            <button
+            <Button
               type="button"
               className="text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
+              onClick={handlePreview}
             >
               Preview
-            </button>
+            </Button>
             <Button
               type="submit"
               className="px-4 py-2 bg-[#a8956b] hover:bg-[#8f7d5a] text-white text-sm font-medium rounded transition-colors cursor-pointer"
@@ -147,7 +156,7 @@ function PostForm({ post }) {
             <button
               type="button"
               onClick={() => document.getElementById("featured-image-input").click()}
-              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors"
+              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
@@ -161,7 +170,7 @@ function PostForm({ post }) {
             <button
               type="button"
               onClick={() => setShowSubtitle(true)}
-              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors"
+              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -220,16 +229,11 @@ function PostForm({ post }) {
         {/* Subtitle Input (optional) */}
         {showSubtitle && (
           <div className="mb-8 relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[#9aa0a6] dark:text-[#666] pointer-events-none">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h10M7 12h6" />
-              </svg>
-            </div>
             <input
               ref={subtitleInputRef}
               type="text"
               placeholder="Article Subtitle..."
-              className="w-full pl-7 pr-8 text-2xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666]"
+              className="w-full text-2xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666]"
               {...register("subtitle")}
             />
             <button
@@ -254,6 +258,7 @@ function PostForm({ post }) {
             label=""
             name="content"
             control={control}
+            editorRef={editorRef}
             defaultValue={getValues("content")}
           />
         </div>

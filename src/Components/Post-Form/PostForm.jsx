@@ -132,7 +132,7 @@ function PostForm({ post }) {
           <div className="flex items-center gap-3">
             <Button
               type="button"
-              className="text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
+              className="inline-block px-4 py-2 text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
               onClick={handlePreview}
             >
               Preview

@@ -26,17 +26,18 @@ function Header() {
             </Link>
           </div>
           <ul className="flex ml-auto items-center gap-2">
-            {navItems.map((item) => 
-            item.active ? (
-              <li key={item.name}>
-                <button
-                  onClick={() => navigate(item.slug)}
-                  className="inline-block px-4 py-2 text-sm font-sans cursor-pointer text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
-                >
-                  {item.name}
-                </button>
-              </li>
-            ) : null)}
+            {navItems.map((item) =>
+              item.active ? (
+                <li key={item.name}>
+                  <button
+                    onClick={() => navigate(item.slug)}
+                    className="inline-block px-4 py-2 text-sm font-sans cursor-pointer text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
+                  >
+                    {item.name}
+                  </button>
+                </li>
+              ) : null
+            )}
             {authStatus && (
               <li>
                 <LogoutBtn />

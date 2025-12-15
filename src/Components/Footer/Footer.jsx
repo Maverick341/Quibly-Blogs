@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import quiblyLogoDark from "@/assets/logo+title.png";
-import quiblyLogo from "@/assets/logo+title-dark.png";
+import quiblyLogoDark from "@/assets/main-logo/logo+title.png";
+import quiblyLogo from "@/assets/main-logo/logo+title-dark.png";
 import { useSelector } from "react-redux";
 
 function Footer() {

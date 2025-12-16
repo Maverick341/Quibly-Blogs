@@ -146,9 +146,34 @@ function PostForm({ post }) {
             </Button>
           </div>
 
-          {/* Slug in top right */}
-          <div className="text-sm font-mono text-[#4f5358] dark:text-[#c5c3bf] opacity-60">
-            /{watch("slug") || "your-slug"}
+          {/* Slug and Status Toggle in top right */}
+          <div className="flex items-center gap-6">
+            {post && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-[#4f5358] dark:text-[#c5c3bf]">Status:</span>
+                <button
+                  type="button"
+                  onClick={() => setValue("status", watch("status") === "active" ? "inactive" : "active")}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                    watch("status") === "active" 
+                      ? "bg-[#a8956b]" 
+                      : "bg-[#d0cdc7] dark:bg-[#5a5d61]"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      watch("status") === "active" ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+                <span className="text-sm font-medium text-[#4f5358] dark:text-[#c5c3bf]">
+                  {watch("status") === "active" ? "Active" : "Inactive"}
+                </span>
+              </div>
+            )}
+            <div className="text-sm font-mono text-[#4f5358] dark:text-[#c5c3bf] opacity-60">
+              /{watch("slug") || "your-slug"}
+            </div>
           </div>
         </div>
         {/* Actions: Add Cover + Add Subtitle */}
@@ -260,7 +285,7 @@ function PostForm({ post }) {
           />
         </div>
 
-        {/* Status and Slug (Hidden) */}
+        {/* Slug (Hidden) and Status for new posts */}
         <div className="hidden">
           <Input
             label="Slug"
@@ -272,11 +297,12 @@ function PostForm({ post }) {
               });
             }}
           />
-          <Select
-            options={["active", "inactive"]}
-            label="Status"
-            {...register("status", { required: true })}
-          />
+          {!post && (
+            <Input
+              type="hidden"
+              {...register("status")}
+            />
+          )}
         </div>
       </div>
     </form>

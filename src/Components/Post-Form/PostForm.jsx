@@ -5,6 +5,7 @@ import postService from "@/appwrite/post";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost, editPost } from "@/store/postSlice";
+import { X } from "lucide-react";
 
 function PostForm({ post }) {
   const [previewImage, setPreviewImage] = useState(null);
@@ -196,16 +197,14 @@ function PostForm({ post }) {
                   const input = document.getElementById("featured-image-input");
                   if (input) input.value = '';
                 }}
-                className="absolute top-4 right-4 p-2 bg-white dark:bg-[#35383c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#3f4347] shadow-lg"
+                className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-white/70 dark:bg-black/50 rounded-lg hover:bg-white/90 dark:hover:bg-black/70 shadow-lg backdrop-blur-sm transition-all cursor-pointer"
                 title="Remove cover"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-5 h-5 text-[#1f2226] dark:text-white" />
               </button>
             </div>
           ) : null}
-          <input
+          <Input
             id="featured-image-input"
             type="file"
             accept="image/png, image/jpg, image/jpeg, image/gif"
@@ -245,9 +244,7 @@ function PostForm({ post }) {
               aria-label="Remove subtitle"
               className="absolute right-0 top-1/2 -translate-y-1/2 text-[#9aa0a6] hover:text-[#8c7a57] dark:text-[#666] dark:hover:text-[#a8956b]"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5" />
             </button>
           </div>
         )}

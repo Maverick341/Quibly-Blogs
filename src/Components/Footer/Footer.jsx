@@ -18,9 +18,14 @@ function Footer() {
             <div className="mb-6 flex justify-start">
               <Link to="/all-posts">
                 <img
-                  src={isDarkMode ? quiblyLogoDark : quiblyLogo}
+                  src={quiblyLogoDark}
                   alt="Quibly"
-                  className="h-20 w-auto object-contain cursor-pointer"
+                  className="hidden dark:block h-20 w-auto object-contain cursor-pointer"
+                />
+                <img
+                  src={quiblyLogo}
+                  alt="Quibly"
+                  className="block dark:hidden h-20 w-auto object-contain cursor-pointer"
                 />
               </Link>
             </div>

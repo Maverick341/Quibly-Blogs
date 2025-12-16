@@ -13,9 +13,14 @@ function Logo({ width = "100px" }) {
       style={{ width, height: "40px" }}
     >
       <img
-        src={isDarkMode ? quiblyLogoDark : quiblyLogo}
+        src={quiblyLogoDark}
         alt="Quibly"
-        className="h-full w-full object-contain object-center"
+        className="hidden dark:block h-full w-full object-contain object-center"
+      />
+      <img
+        src={quiblyLogo}
+        alt="Quibly"
+        className="block dark:hidden h-full w-full object-contain object-center"
       />
     </div>
   );

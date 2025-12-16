@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import parse from "html-react-parser";
-import { Share2 } from "lucide-react";
+import { ChevronsUpDown, Share2 } from "lucide-react";
 import postService from "@/appwrite/post";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Container } from "@/Components";
+import { Button } from "@/Components";
 import { removePost, setCurrentPost } from "@/store/postSlice";
 
 export default function Post() {
+  const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useDispatch();
   const post = useSelector((state) => state.post.currentPost);
 
@@ -55,12 +56,22 @@ export default function Post() {
     <article className="min-h-screen bg-[#f5f3f0] dark:bg-[#2a2d31] py-12 px-4 sm:px-6">
       <div className="max-w-[720px] mx-auto">
         {/* Featured Image first */}
-        <figure className="mb-8 sm:mb-10 rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]">
+        <figure className={`relative sm:mb-10 rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]`}>
           <img
             src={postService.getFileView(post.featuredImage)}
             alt={post.title}
-            className="w-full h-auto object-cover"
+            className={`w-full object-cover ${isExpanded ? "max-h-[1000px]" : "max-h-96"} transition-all duration-500 ease-in-out`}
           />
+          <button
+                type="button"
+                onClick={() => 
+                  setIsExpanded((prev) => !prev)
+                }
+                className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-white/70 dark:bg-black/50 rounded-lg hover:bg-white/90 dark:hover:bg-black/70 shadow-lg backdrop-blur-sm transition-all cursor-pointer"
+                title="Expand cover"
+              >
+                <ChevronsUpDown className="w-5 h-5 text-[#1f2226] dark:text-white" />
+              </button>
         </figure>
 
         {/* Title and meta below image */}
@@ -74,7 +85,7 @@ export default function Post() {
           <div className="flex justify-end mb-7">
             <div className="inline-flex items-center gap-0.5 px-2 py-1 bg-white dark:bg-[#35383c] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] border border-[#e0dcd5] dark:border-[#414549]">
               {/* Share button - available to all */}
-              <button
+              <Button
                 onClick={() => {
                   const shareUrl = `${window.location.origin}/post/${slug}`;
                   if (navigator.share) {
@@ -92,14 +103,14 @@ export default function Post() {
               >
                 <Share2 className="w-3.5 h-3.5" strokeWidth={1.75} />
                 <span>Share</span>
-              </button>
+              </Button>
 
               {isAuthor && (
                 <>
                   <div className="w-px h-4 bg-[#e0dcd5] dark:bg-[#414549]" />
                   
                   <Link to={`/edit-post/${post.$id}`}>
-                    <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors duration-150 rounded hover:bg-black/5 dark:hover:bg-white/5">
+                    <Button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors duration-150 rounded hover:bg-black/5 dark:hover:bg-white/5">
                       <svg
                         className="w-3.5 h-3.5"
                         fill="none"
@@ -114,10 +125,10 @@ export default function Post() {
                         />
                       </svg>
                       <span>Edit</span>
-                    </button>
+                    </Button>
                   </Link>
 
-                  <button
+                  <Button
                     onClick={deletePost}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#4f5358] hover:text-[#d9534f] dark:text-[#c5c3bf] dark:hover:text-[#ef4444] transition-colors duration-150 rounded hover:bg-black/5 dark:hover:bg-white/5"
                   >
@@ -135,7 +146,7 @@ export default function Post() {
                       />
                     </svg>
                     <span>Delete</span>
-                  </button>
+                  </Button>
                 </>
               )}
             </div>

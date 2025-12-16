@@ -14,13 +14,9 @@ export default function RTE({
 
   return (
     <div className="w-full">
-      {label && <label className="inline-block mb-1 pl-1">{label}</label>}
+      {label && <label className="inline-block mb-1 pl-1 dark:text-gray-200">{label}</label>}
 
-      <div className={`rounded-lg overflow-hidden border ${
-        isDark 
-          ? 'bg-[#35383c] border-[#4a4d52]' 
-          : 'bg-[#f8f7f4] border-[#e5e4e0]'
-      }`}>
+      <div className="rounded-lg overflow-hidden border bg-[#f8f7f4] border-[#e5e4e0] dark:bg-[#35383c] dark:border-[#4a4d52]">
       <Controller
         name={name || "content"}
         control={control}

@@ -5,8 +5,10 @@ export default function ThemeProvider({ children }) {
   const mode = useSelector((state) => state.theme.mode);
 
   useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(mode);
+    const isDark = mode === "dark";
+    document.documentElement.classList.toggle("dark", isDark);
+
+    localStorage.setItem("theme", mode);
   }, [mode]);
 
   return children;

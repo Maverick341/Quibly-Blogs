@@ -6,6 +6,7 @@ const conf = {
     appwriteProfilesTableId: String(import.meta.env.VITE_APPWRITE_PROFILES_TABLE_ID),
     appwriteBucketId: String(import.meta.env.VITE_APPWRITE_BUCKET_ID),
     appwriteAvatarBucketId: String(import.meta.env.VITE_APPWRITE_AVATAR_BUCKET_ID),
+    backendApiUrl: String(import.meta.env.VITE_BACKEND_API_URL),
 }
 
 export default conf;

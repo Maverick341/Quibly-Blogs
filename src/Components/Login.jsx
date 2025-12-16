@@ -1,8 +1,9 @@
 import React from "react";
-import { login as authLogin } from "@/store/authSlice";
+import { login as authLogin, updateProfile } from "@/store/authSlice";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Input } from ".";
 import authService from "@/appwrite/auth";
+import profileService from "@/appwrite/profile";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useOAuth } from "@/hooks/useOAuth";
@@ -40,7 +41,15 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
       if (session) {
         const userData = await authService.getCurrentUser();
 
-        if (userData) dispatch(authLogin({ userData }));
+        if (userData) {
+          dispatch(authLogin({ userData }));
+          
+          // Fetch and merge profile data
+          const profile = await profileService.getProfile(userData.$id);
+          if (profile) {
+            dispatch(updateProfile({ profile }));
+          }
+        }
         navigate("/");
       }
     } catch (error) {

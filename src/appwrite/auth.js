@@ -1,5 +1,6 @@
 import conf from "@/conf/conf";
 import { Client, Account, ID } from "appwrite";
+import profileService from "./profile";
 
 export class Service {
   client = new Client();
@@ -12,7 +13,7 @@ export class Service {
     this.account = new Account(this.client);
   }
 
-  async createAccount({ email, password, name }) {
+  async createAccount({ email, password, name, age, bio }) {
     try {
       const userAccount = await this.account.create({
         userId: ID.unique(),
@@ -22,10 +23,21 @@ export class Service {
       });
 
       if (userAccount) {
-        // call another method
-        return this.login({ email, password });
+        // Login first to establish session
+        await this.login({ email, password });
+
+        // Now create profile with active session
+        await profileService.createProfile({
+          userId: userAccount.$id,
+          name,
+          age: age ? Number(age) : null,
+          bio: bio || "",
+          avatar: null,
+        });
+
+        return userAccount;
       } else {
-        return null; // returned userAccount by the instructor; maybe incorrect
+        return null;
       }
     } catch (error) {
       throw error;
@@ -83,6 +95,20 @@ export class Service {
       // Get the user data
       const user = await this.account.get();
 
+      // Check if profile exists, if not create one
+      try {
+        await profileService.getProfile(user.$id);
+      } catch (error) {
+        // Profile doesn't exist, create it
+        await profileService.createProfile({
+          userId: user.$id,
+          name: user.name,
+          age: null,
+          bio: "",
+          avatar: null,
+        });
+      }
+
       return user;
     } catch (error) {
       console.log("Appwrite service :: handleOAuth2Callback :: error", error);
@@ -92,12 +118,29 @@ export class Service {
 
   async deleteAccount() {
     try {
-      // Delete profile first
+      // Get current user
+      const user = await this.getCurrentUser();
+      if (!user) throw new Error("No user logged in");
 
-      // Call your backend to delete auth account
+      // Delete profile first
+      await profileService.deleteProfile(user.$id);
+
+      // Call backend to delete auth account
+      const response = await fetch(
+        `${conf.backendApiUrl}/api/deleteUser/${user.$id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
 
       // Logout
-      
+      await this.logout();
+
+      return true;
     } catch (error) {
       console.log("Appwrite service :: deleteAccount :: error", error);
       throw error;

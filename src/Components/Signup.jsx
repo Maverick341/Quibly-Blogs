@@ -1,7 +1,9 @@
 import React from "react";
 import authService from "@/appwrite/auth";
+import profileService from "@/appwrite/profile";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login as authLogin } from "@/store/authSlice";
+import { updateProfile } from "@/store/authSlice";
 import { Button, Input } from ".";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -25,7 +27,7 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
   } = useForm({
     defaultValues: {
       name: "",
-      age: 0,
+      age: "",
       email: "",
       password: "",
     },
@@ -47,6 +49,17 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
 
         if (userData) {
           dispatch(authLogin({ userData }));
+          
+          // Profile is already created, just dispatch the data we have
+          dispatch(updateProfile({ 
+            profile: {
+              name: data.name,
+              age: data.age ? Number(data.age) : null,
+              bio: data.bio || "",
+              avatar: null,
+            }
+          }));
+          
           navigate("/");
         }
       }
@@ -100,7 +113,7 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
           </div>
 
           {/* Age field */}
-          {/* <div>
+          <div>
             <Input
               label="Age"
               placeholder="Your age"
@@ -116,7 +129,7 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
               })}
               errors={errors.age}
             />
-          </div> */}
+          </div>
 
           {/* Email field */}
           <div>

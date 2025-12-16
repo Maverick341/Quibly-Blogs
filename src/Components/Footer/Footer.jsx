@@ -10,7 +10,7 @@ function Footer() {
 
   return (
     <footer className="bg-[#eeebe4] text-[#1f2226] border-t border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-8 lg:py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Logo and Description */}

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import authService from "./appwrite/auth";
-import { login, logout } from "./store/authSlice";
+import { login, logout, updateProfile } from "./store/authSlice";
 import { Header, Footer } from "./Components";
 import "./App.css";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import profileService from "./appwrite/profile";
 
 function Layout() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,12 @@ function Layout() {
       .then((userData) => {
         if (userData) {
           dispatch(login({ userData }));
+
+          profileService.getProfile(userData.$id).then((profile) => {
+            if (profile) {
+              dispatch(updateProfile({ profile }));
+            }
+          });
         } else {
           dispatch(logout());
         }
@@ -52,7 +59,7 @@ function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
       {shouldShowHeader && <Header />}
-      <main className='grow'>
+      <main className="grow">
         <Outlet />
       </main>
       {shouldShowHeader && <Footer />}

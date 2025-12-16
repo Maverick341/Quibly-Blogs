@@ -54,12 +54,12 @@ function AllPosts() {
 
       {/* All Stories Section */}
       <div className="py-16 px-6 pb-0 bg-linear-to-b from-[#f5f4f0] to-[#eeede8] dark:from-[#2a2d31] dark:to-[#25282c]">
-        <div className="max-w-7xl mx-auto pb-16">
+        <div className="max-w-7xl mx-auto pb-20">
           <h2 className="text-3xl font-normal text-[#1f2226] dark:text-[#e8e6e3] mb-18 text-center italic">
             Stories from our community
           </h2>
         {posts.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 min-h-[30vh] flex items-center justify-center">
             <p className="text-xl text-[#4f5358] dark:text-[#c5c3bf]">
               No posts yet. Be the first to share your story!
             </p>

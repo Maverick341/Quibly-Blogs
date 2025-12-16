@@ -17,7 +17,7 @@ function Header() {
   ];
 
   return (
-    <header className="py-4 bg-[#eeebe4] text-[#1f2226] border-b border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
+    <header className="py-2 bg-[#eeebe4] text-[#1f2226] border-b border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
       <Container>
         <nav className="flex items-center">
           <div className="mr-4">

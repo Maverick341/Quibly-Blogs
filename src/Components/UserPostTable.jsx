@@ -16,17 +16,17 @@ function UserPostTable({ posts, onDelete, onRestore }) {
   }
 
   return (
-    <div className="bg-white dark:bg-[#35383c] rounded-lg border border-[#e5e4e0] dark:border-[#4a4d52]">
+    <div className="bg-white dark:bg-[#35383c] border border-[#d4d3cf] dark:border-[#4a4d52]">
       <table className="w-full">
-        <thead className="bg-[#f8f7f4] dark:bg-[#2a2d31] border-b border-[#e5e4e0] dark:border-[#3a3d41]">
+        <thead className="bg-[#f8f7f4] dark:bg-[#2a2d31] border border-[#d4d3cf] dark:border-[#4a4d52]">
           <tr>
-            <th className="text-left py-2 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf]">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] uppercase tracking-wider">
               Title
             </th>
-            <th className="hidden md:table-cell text-left py-2 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-64">
+            <th className="hidden md:table-cell text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-64 uppercase tracking-wider">
               Slug
             </th>
-            <th className="text-right py-2 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-32">
+            <th className="text-right py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-32 uppercase tracking-wider">
               Actions
             </th>
           </tr>

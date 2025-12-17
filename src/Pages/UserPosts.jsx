@@ -217,11 +217,11 @@ function UserPosts() {
     <div className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] py-8 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[#1f2226] dark:text-[#e8e6e3] mb-1">
+        <div className="mb-8">
+          <h1 className="text-4xl font-normal text-[#e8e6e3] dark:text-[#e8e6e3] mb-2 tracking-tight">
             Blogs and drafts
           </h1>
-          <p className="text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
+          <p className="text-base text-[#9aa0a6] dark:text-[#9aa0a6]">
             Status overview of your blogs and drafts
           </p>
         </div>
@@ -262,13 +262,13 @@ function UserPosts() {
               placeholder="Search articles"
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full pl-10 pr-3 py-2 text-sm rounded-lg border border-[#e5e4e0] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#1f2226] dark:text-[#e8e6e3] placeholder:text-[#9aa0a6] focus:outline-none focus:ring-2 focus:ring-[#a8956b] transition-colors"
+              className="w-full pl-10 pr-3 py-2 text-sm border border-[#d4d3cf] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#1f2226] dark:text-[#e8e6e3] placeholder:text-[#9aa0a6] focus:outline-none focus:border-[#a8956b] dark:focus:border-[#a8956b] transition-colors"
             />
           </div>
           <div ref={filterRef} className="relative">
             <button
               onClick={openFilterDialog}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#e5e4e0] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#6a6e73] dark:text-[#9aa0a6] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3 py-2 border border-[#d4d3cf] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#6a6e73] dark:text-[#9aa0a6] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-colors cursor-pointer"
               title="Filter options"
             >
               <SlidersHorizontal className="w-4 h-4" />

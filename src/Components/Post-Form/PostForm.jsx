@@ -12,9 +12,11 @@ function PostForm({ post }) {
   const [removeExistingCover, setRemoveExistingCover] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(Boolean(post?.subtitle));
   const [showDropdown, setShowDropdown] = useState(false);
+  const [visibleErrors, setVisibleErrors] = useState({});
+  const [submitAttempt, setSubmitAttempt] = useState(0);
   const subtitleInputRef = useRef(null);
   const dropdownRef = useRef(null);
-  const { register, handleSubmit, watch, setValue, control, getValues } =
+  const { register, handleSubmit, watch, setValue, control, getValues, formState: { errors } } =
     useForm({
       defaultValues: {
         title: post?.title || "",
@@ -74,7 +76,36 @@ function PostForm({ post }) {
     };
   }, [showDropdown]);
 
+  // Auto-hide errors after 5 seconds
+  useEffect(() => {
+    if (submitAttempt > 0) {
+      const newVisibleErrors = {};
+      Object.keys(errors).forEach(key => {
+        newVisibleErrors[key] = true;
+      });
+      setVisibleErrors(newVisibleErrors);
+
+      if (Object.keys(errors).length > 0) {
+        const timer = setTimeout(() => {
+          setVisibleErrors({});
+        }, 5000);
+
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [errors, submitAttempt]);
+
   const submit = async (data) => {
+    // Show confirmation alert before publishing/updating
+    const action = post ? "update" : "publish";
+    const message = post 
+      ? "Are you sure you want to update this post?" 
+      : "Are you sure you want to publish this post?";
+    
+    if (!window.confirm(message)) {
+      return;
+    }
+
     if (post) {
       const file = data.image[0]
         ? await postService.uploadFile(data.image[0])
@@ -149,7 +180,10 @@ function PostForm({ post }) {
   const hasCover = Boolean(((post && post.featuredImage && !removeExistingCover)) || previewImage);
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]">
+    <form onSubmit={(e) => {
+      setSubmitAttempt(prev => prev + 1);
+      handleSubmit(submit)(e);
+    }} className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]">
       <div className="max-w-4xl mx-auto p-8">
         {/* Buttons and Slug - Simple layout without navbar */}
         <div className="flex items-center justify-between mb-12">
@@ -282,20 +316,27 @@ function PostForm({ post }) {
           </div>
         </div>
         {/* Actions: Add Cover + Add Subtitle */}
-        <div className="flex items-center gap-6 mb-6">
+        <div className="flex items-center gap-6 mb-6 min-h-10">
           {!hasCover && (
-            <button
-              type="button"
-              onClick={() => document.getElementById("featured-image-input").click()}
-              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
-                <circle cx="8" cy="9" r="2" />
-                <path d="M21 19l-6-6-4 4-2-2-5 4" />
-              </svg>
-              <span className="text-sm">Add Cover</span>
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => document.getElementById("featured-image-input").click()}
+                className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+                  <circle cx="8" cy="9" r="2" />
+                  <path d="M21 19l-6-6-4 4-2-2-5 4" />
+                </svg>
+                <span className="text-sm">Add Cover</span>
+              </button>
+              {errors.image && visibleErrors.image && (
+                <p className="text-[10px] text-red-500 dark:text-red-400 absolute left-0 top-full mt-1 whitespace-nowrap">
+                  {errors.image.message}
+                </p>
+              )}
+            </div>
           )}
           {!showSubtitle && (
             <button
@@ -339,7 +380,7 @@ function PostForm({ post }) {
             type="file"
             accept="image/png, image/jpg, image/jpeg, image/gif"
             className="hidden"
-            {...register("image", { required: !post })}
+            {...register("image", { required: !post ? "Cover image is required" : false })}
           />
         </div>
 
@@ -350,9 +391,16 @@ function PostForm({ post }) {
           <input
             type="text"
             placeholder="Article Title..."
-            className="w-full text-5xl font-bold text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666]"
-            {...register("title", { required: true })}
+            className="w-full text-4xl font-normal text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666]"
+            {...register("title", { required: "Title is required" })}
           />
+          <div className="h-4 mt-1">
+            {errors.title && visibleErrors.title && (
+              <p className="text-[10px] text-red-500 dark:text-red-400">
+                {errors.title.message}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Subtitle Input (optional) */}
@@ -388,6 +436,13 @@ function PostForm({ post }) {
             editorRef={editorRef}
             defaultValue={getValues("content")}
           />
+          <div className="h-4 mt-2">
+            {errors.content && visibleErrors.content && (
+              <p className="text-[10px] text-red-500 dark:text-red-400">
+                {errors.content.message}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Slug (Hidden) and Status for new posts */}

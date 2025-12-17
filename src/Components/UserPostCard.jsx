@@ -34,9 +34,9 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
   }, [showMenu]);
 
   return (
-    <tr className="border-b border-[#e5e4e0] dark:border-[#3a3d41] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c] transition-colors">
+    <tr className="border border-[#d4d3cf] dark:border-[#4a4d52] hover:outline hover:outline-[#a8956b] dark:hover:outline-[#a8956b] hover:-outline-offset-1 transition-all">
       {/* Title Column */}
-      <td className="py-2 px-4">
+      <td className="py-4 px-4">
         <Link
           to={`/post/${$id}`}
           className="text-base font-medium text-[#1f2226] dark:text-[#e8e6e3] hover:text-[#a8956b] dark:hover:text-[#a8956b] transition-colors line-clamp-1 block"
@@ -63,19 +63,25 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
       </td>
 
       {/* Slug Column */}
-      <td className="hidden md:table-cell py-2 px-4">
+      <td className="hidden md:table-cell py-4 px-4">
         <span className="text-xs font-mono text-[#6a6e73] dark:text-[#9aa0a6] truncate block">
           /{slug || $id}
         </span>
       </td>
 
       {/* Actions Column */}
-      <td className="py-2 px-4 relative">
+      <td className="py-4 px-4 relative">
         <div className="flex items-center justify-end gap-1">
+          
           <button
-            onClick={() => navigate(`/edit-post/${$id}`)}
-            className="p-1.5 text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#a8956b] dark:hover:text-[#a8956b] hover:bg-[#f0eeea] dark:hover:bg-[#2a2d31] rounded-md transition-colors cursor-pointer"
-            title="Edit post"
+            onClick={() => status !== "deleted" && navigate(`/edit-post/${$id}`)}
+            disabled={status === "deleted"}
+            className={`p-1.5 rounded-md transition-colors ${
+              status === "deleted"
+                ? "text-[#9aa0a6] dark:text-[#6a6e73] cursor-not-allowed opacity-50"
+                : "text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#a8956b] dark:hover:text-[#a8956b] hover:bg-[#f0eeea] dark:hover:bg-[#2a2d31] cursor-pointer"
+            }`}
+            title={status === "deleted" ? "Cannot edit deleted post" : "Edit post"}
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
@@ -104,7 +110,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
           <div ref={menuRef} className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf] hover:bg-[#f0eeea] dark:hover:bg-[#2a2d31] rounded-md transition-colors"
+              className="p-1.5 text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf] hover:bg-[#f0eeea] dark:hover:bg-[#2a2d31] rounded-md transition-colors cursor-pointer"
               title="More actions"
             >
               <MoreVertical className="w-3.5 h-3.5" />
@@ -118,7 +124,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
                     navigate(`/post/${$id}`);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors cursor-pointer"
                 >
                   <Eye className="w-4 h-4" />
                   <span>View post</span>

@@ -20,6 +20,7 @@ export default function RTE({
       <Controller
         name={name || "content"}
         control={control}
+        rules={{ required: "Content is required" }}
         render={({ field: { onChange } }) => (
           <Editor
             key={isDark ? 'dark' : 'light'}

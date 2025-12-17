@@ -16,27 +16,29 @@ function UserPostTable({ posts, onDelete, onRestore }) {
   }
 
   return (
-    <div className="bg-white dark:bg-[#35383c] border border-[#d4d3cf] dark:border-[#4a4d52]">
-      <table className="w-full">
-        <thead className="bg-[#f8f7f4] dark:bg-[#2a2d31] border border-[#d4d3cf] dark:border-[#4a4d52]">
-          <tr>
-            <th className="text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] uppercase tracking-wider">
-              Title
-            </th>
-            <th className="hidden md:table-cell text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-64 uppercase tracking-wider">
-              Slug
-            </th>
-            <th className="text-right py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-32 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {posts.map((post) => (
-            <UserPostCard key={post.$id} {...post} onDelete={onDelete} onRestore={onRestore} />
-          ))}
-        </tbody>
-      </table>
+    <div className="w-full overflow-x-auto overflow-y-visible pb-20">
+      <div className="min-w-[600px]">
+        <table className="w-full bg-white dark:bg-[#35383c] border border-[#d4d3cf] dark:border-[#4a4d52]">
+          <thead className="bg-[#f8f7f4] dark:bg-[#2a2d31] border border-[#d4d3cf] dark:border-[#4a4d52]">
+            <tr>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] uppercase tracking-wider">
+                Title
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-64 uppercase tracking-wider">
+                Slug
+              </th>
+              <th className="text-right py-3 px-4 text-xs font-semibold text-[#4f5358] dark:text-[#c5c3bf] w-32 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="relative">
+            {posts.map((post, index) => (
+              <UserPostCard key={post.$id} {...post} onDelete={onDelete} onRestore={onRestore} rowIndex={index} totalRows={posts.length} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

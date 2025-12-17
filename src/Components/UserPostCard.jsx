@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Eye, MoreVertical, RotateCcw } from "lucide-react";
 
-function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onDelete, onRestore }) {
+function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onDelete, onRestore, rowIndex = 0, totalRows = 1 }) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const menuRef = useRef(null);
+  const buttonRef = useRef(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -34,7 +35,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
   }, [showMenu]);
 
   return (
-    <tr className="border border-[#d4d3cf] dark:border-[#4a4d52] hover:outline hover:outline-[#a8956b] dark:hover:outline-[#a8956b] hover:-outline-offset-1 transition-all">
+    <tr className="border border-[#d4d3cf] dark:border-[#4a4d52] hover:outline hover:outline-[#a8956b] dark:hover:outline-[#a8956b] hover:-outline-offset-1 transition-all relative" style={{ zIndex: showMenu ? 10 : 1 }}>
       {/* Title Column */}
       <td className="py-4 px-4">
         <Link
@@ -63,14 +64,14 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
       </td>
 
       {/* Slug Column */}
-      <td className="hidden md:table-cell py-4 px-4">
+      <td className="py-4 px-4 w-64">
         <span className="text-xs font-mono text-[#6a6e73] dark:text-[#9aa0a6] truncate block">
           /{slug || $id}
         </span>
       </td>
 
       {/* Actions Column */}
-      <td className="py-4 px-4 relative">
+      <td className="py-4 px-4 relative w-32">
         <div className="flex items-center justify-end gap-1">
           
           <button
@@ -109,6 +110,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
           {/* Three-dot menu */}
           <div ref={menuRef} className="relative">
             <button
+              ref={buttonRef}
               onClick={() => setShowMenu(!showMenu)}
               className="p-1.5 text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf] hover:bg-[#f0eeea] dark:hover:bg-[#2a2d31] rounded-md transition-colors cursor-pointer"
               title="More actions"
@@ -118,7 +120,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
 
             {/* Dropdown Menu */}
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#35383c] rounded-lg shadow-lg border border-[#e5e4e0] dark:border-[#4a4d52] py-1 z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#35383c] rounded-lg shadow-xl border border-[#e5e4e0] dark:border-[#4a4d52] py-1 z-100">
                 <button
                   onClick={() => {
                     navigate(`/post/${$id}`);

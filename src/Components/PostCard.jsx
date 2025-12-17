@@ -35,7 +35,7 @@ function PostCard({ $id, title, subtitle, featuredImage, userId, $createdAt }) {
 
   return (
     <Link to={`/post/${$id}`}>
-      <article className="group cursor-pointer border border-[#d0cdc7] dark:border-[#4a4d52] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-all p-5">
+      <article className="group cursor-pointer bg-[#ebe8e1] dark:bg-[#2f3236] border border-[#d0cdc7] dark:border-[#4a4d52] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-all p-5">
         {/* Image Container */}
         <figure className="relative overflow-hidden rounded-sm mb-4 aspect-16/10 bg-[#e5e4e0] dark:bg-[#35383c]">
           <img

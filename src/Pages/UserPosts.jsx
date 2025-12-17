@@ -1,45 +1,67 @@
-import postService from '@/appwrite/post';
-import { removePost, setUserPosts } from '@/store/postSlice';
-import { Query } from 'appwrite';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import UserPostTable from '@/Components/UserPostTable';
-import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import postService from "@/appwrite/post";
+import { removePost, setUserPosts } from "@/store/postSlice";
+import { Query } from "appwrite";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import UserPostTable from "@/Components/UserPostTable";
+import {
+  Search,
+  SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  ArrowLeft,
+} from "lucide-react";
 
 function UserPosts() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userPosts = useSelector((state) => state.post.userPosts);
   const userData = useSelector((state) => state.auth.userData);
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterDialog, setShowFilterDialog] = useState(false);
-  const [filterTab, setFilterTab] = useState('date'); // 'tags' or 'date'
-  const [dateFilter, setDateFilter] = useState(''); // Applied filter
+  const [filterTab, setFilterTab] = useState("date"); // 'tags' or 'date'
+  const [dateFilter, setDateFilter] = useState(""); // Applied filter
   const [selectedTags, setSelectedTags] = useState([]); // Applied tags
-  const [tempDateFilter, setTempDateFilter] = useState(''); // Temporary selection
+  const [tempDateFilter, setTempDateFilter] = useState(""); // Temporary selection
   const [tempSelectedTags, setTempSelectedTags] = useState([]); // Temporary tags
-  const [tagSearchQuery, setTagSearchQuery] = useState(''); // Search tags
+  const [tagSearchQuery, setTagSearchQuery] = useState(""); // Search tags
   const filterRef = useRef(null);
   const postsPerPage = 6;
 
   // Dummy tags - Future feature: These will be fetched from backend/database
-  const availableTags = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'CSS', 'Tailwind', 'Web Dev', 'Tutorial'];
+  const availableTags = [
+    "React",
+    "JavaScript",
+    "TypeScript",
+    "Node.js",
+    "CSS",
+    "Tailwind",
+    "Web Dev",
+    "Tutorial",
+  ];
 
   useEffect(() => {
     if (userData?.$id) {
-      postService.getPosts([Query.equal("userId", userData.$id)]).then((posts) => {
-        if (posts) {
-          dispatch(setUserPosts({ userPosts: posts.rows }));
-        }
-      });
+      postService
+        .getPosts([Query.equal("userId", userData.$id)])
+        .then((posts) => {
+          if (posts) {
+            dispatch(setUserPosts({ userPosts: posts.rows }));
+          }
+        });
     }
   }, [userData?.$id, dispatch]);
 
   const handleDelete = async (postId) => {
-    if (window.confirm("Are you sure you want to permanently delete this post? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to permanently delete this post? This action cannot be undone."
+      )
+    ) {
       try {
         await postService.deletePost(postId);
         dispatch(removePost(postId));
@@ -51,7 +73,7 @@ function UserPosts() {
 
   const handleRestore = async (postId) => {
     try {
-      const post = userPosts.find(p => p.$id === postId);
+      const post = userPosts.find((p) => p.$id === postId);
       if (!post) return;
 
       const updatedPost = await postService.updatePost(postId, {
@@ -64,7 +86,9 @@ function UserPosts() {
 
       if (updatedPost) {
         // Refresh the posts list
-        const posts = await postService.getPosts([Query.equal("userId", userData.$id)]);
+        const posts = await postService.getPosts([
+          Query.equal("userId", userData.$id),
+        ]);
         if (posts) {
           dispatch(setUserPosts({ userPosts: posts.rows }));
         }
@@ -83,21 +107,21 @@ function UserPosts() {
   // Filter posts by date
   const filterByDate = (post) => {
     if (!dateFilter) return true;
-    
+
     const postDate = new Date(post.$createdAt);
     const now = new Date();
     const dayInMs = 24 * 60 * 60 * 1000;
-    
+
     switch (dateFilter) {
-      case 'previous-day':
+      case "previous-day":
         const yesterday = new Date(now - dayInMs);
         return postDate.toDateString() === yesterday.toDateString();
-      case 'past-3-days':
-        return (now - postDate) <= (3 * dayInMs);
-      case 'past-week':
-        return (now - postDate) <= (7 * dayInMs);
-      case 'past-month':
-        return (now - postDate) <= (30 * dayInMs);
+      case "past-3-days":
+        return now - postDate <= 3 * dayInMs;
+      case "past-week":
+        return now - postDate <= 7 * dayInMs;
+      case "past-month":
+        return now - postDate <= 30 * dayInMs;
       default:
         return true;
     }
@@ -113,9 +137,11 @@ function UserPosts() {
 
   // Clear filters
   const clearFilters = () => {
-    setTempDateFilter('');
+    setTempDateFilter("");
     setTempSelectedTags([]);
-    setTagSearchQuery('');
+    setTagSearchQuery("");
+    setDateFilter("");
+    setSelectedTags([]);
   };
 
   // Close filter dialog and reset temp values
@@ -123,15 +149,15 @@ function UserPosts() {
     setShowFilterDialog(false);
     setTempDateFilter(dateFilter);
     setTempSelectedTags(selectedTags);
-    setTagSearchQuery('');
+    setTagSearchQuery("");
   };
 
   // Open filter dialog
   const openFilterDialog = () => {
     setTempDateFilter(dateFilter);
     setTempSelectedTags(selectedTags);
-    setTagSearchQuery('');
-    setShowFilterDialog(true);
+    setTagSearchQuery("");
+    setShowFilterDialog((prev) => !prev);
   };
 
   // Close menu when clicking outside
@@ -151,39 +177,50 @@ function UserPosts() {
   }, [showFilterDialog, dateFilter, selectedTags]);
 
   // Filter posts based on active tab, search query, and filters
-  const filteredPosts = userPosts.filter(post => {
+  const filteredPosts = userPosts.filter((post) => {
     // Filter by tab
-    if (activeTab === 'published' && (post.publishStatus !== 'published' || post.status !== 'active')) return false;
-    if (activeTab === 'drafts' && (post.publishStatus !== 'draft' || post.status !== 'active')) return false;
-    if (activeTab === 'deleted' && post.status !== 'deleted') return false;
-    
+    if (
+      activeTab === "published" &&
+      (post.publishStatus !== "published" || post.status !== "active")
+    )
+      return false;
+    if (
+      activeTab === "drafts" &&
+      (post.publishStatus !== "draft" || post.status !== "active")
+    )
+      return false;
+    if (activeTab === "deleted" && post.status !== "deleted") return false;
+
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!post.title.toLowerCase().includes(query)) return false;
     }
-    
+
     // Filter by date
     if (!filterByDate(post)) return false;
-    
+
     // Filter by tags - Future feature: Posts will have a 'tags' field from backend
     // For now, this will not filter anything since posts don't have tags yet
     // When implemented, posts should have a tags array field (e.g., post.tags: ['React', 'JavaScript'])
     if (selectedTags.length > 0) {
       // Future implementation:
       // if (!post.tags || !selectedTags.some(tag => post.tags.includes(tag))) return false;
-      
       // Temporary: Show all posts when tags are selected (no filtering until backend ready)
       // Remove this comment block once backend tags are implemented
     }
-    
+
     return true;
   });
 
   // Calculate counts
-  const publishedCount = userPosts.filter(p => p.publishStatus === 'published' && p.status === 'active').length;
-  const draftsCount = userPosts.filter(p => p.publishStatus === 'draft' && p.status === 'active').length;
-  const deletedCount = userPosts.filter(p => p.status === 'deleted').length;
+  const publishedCount = userPosts.filter(
+    (p) => p.publishStatus === "published" && p.status === "active"
+  ).length;
+  const draftsCount = userPosts.filter(
+    (p) => p.publishStatus === "draft" && p.status === "active"
+  ).length;
+  const deletedCount = userPosts.filter((p) => p.status === "deleted").length;
 
   // Pagination calculations
   const totalPosts = filteredPosts.length;
@@ -207,36 +244,46 @@ function UserPosts() {
   };
 
   const tabs = [
-    { id: 'all', label: 'All', count: userPosts.length },
-    { id: 'published', label: 'Published', count: publishedCount },
-    { id: 'drafts', label: 'Drafts', count: draftsCount },
-    { id: 'deleted', label: 'Trash', count: deletedCount },
+    { id: "all", label: "All", count: userPosts.length },
+    { id: "published", label: "Published", count: publishedCount },
+    { id: "drafts", label: "Drafts", count: draftsCount },
+    { id: "deleted", label: "Trash", count: deletedCount },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] py-8 px-6">
+    <div className="min-h-screen bg-linear-to-b from-[#dedad5] to-[#f5f4f0] dark:from-[#1a1d21] dark:to-[#2a2d31] py-4 sm:py-8 px-4 sm:px-6 relative">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-2 sm:px-3 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#1f2226] dark:hover:text-[#e8e6e3] transition-colors cursor-pointer"
+          title="Go back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-normal text-[#e8e6e3] dark:text-[#e8e6e3] mb-2 tracking-tight">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-normal text-[#1f2226] dark:text-[#e8e6e3] mb-2 tracking-tight">
             Blogs and drafts
           </h1>
-          <p className="text-base text-[#9aa0a6] dark:text-[#9aa0a6]">
+          <p className="text-sm sm:text-base text-[#9aa0a6] dark:text-[#9aa0a6]">
             Status overview of your blogs and drafts
           </p>
         </div>
 
         {/* Tabs Navigation */}
-        <div className="mb-4 border-b border-[#e5e4e0] dark:border-[#3a3d41]">
-          <div className="flex gap-6">
+        <div className="mb-4 border-b border-[#e5e4e0] dark:border-[#3a3d41] overflow-x-auto">
+          <div className="flex gap-4 sm:gap-6 min-w-max sm:min-w-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`pb-2 px-1 text-sm font-medium transition-colors relative cursor-pointer ${
+                className={`pb-2 px-1 text-sm font-medium transition-colors relative cursor-pointer whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'text-[#1f2226] dark:text-[#e8e6e3]'
-                    : 'text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf]'
+                    ? "text-[#1f2226] dark:text-[#e8e6e3]"
+                    : "text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf]"
                 }`}
               >
                 {tab.label}
@@ -254,7 +301,7 @@ function UserPosts() {
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="mb-4 flex gap-3">
+        <div className="mb-4 flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6a6e73] dark:text-[#9aa0a6]" />
             <input
@@ -268,7 +315,7 @@ function UserPosts() {
           <div ref={filterRef} className="relative">
             <button
               onClick={openFilterDialog}
-              className="flex items-center gap-2 px-3 py-2 border border-[#d4d3cf] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#6a6e73] dark:text-[#9aa0a6] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-colors cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 border border-[#d4d3cf] dark:border-[#4a4d52] bg-white dark:bg-[#35383c] text-[#6a6e73] dark:text-[#9aa0a6] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-colors cursor-pointer"
               title="Filter options"
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -277,36 +324,36 @@ function UserPosts() {
 
             {/* Filter Dropdown Menu */}
             {showFilterDialog && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#35383c] rounded-xl shadow-2xl z-50 border border-[#e5e4e0] dark:border-[#4a4d52]">
+              <div className="absolute right-0 left-0 sm:left-auto mt-2 w-full sm:w-80 bg-white dark:bg-[#35383c] rounded-lg shadow-2xl z-50 border border-[#e5e4e0] dark:border-[#4a4d52]">
                 {/* Filter Tabs */}
-                <div className="flex border-b border-[#e5e4e0] dark:border-[#4a4d52] p-3">
+                <div className="flex border-b border-[#e5e4e0] dark:border-[#4a4d52] p-2 sm:p-3 gap-2">
                   <button
-                    onClick={() => setFilterTab('tags')}
-                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer relative ${
-                      filterTab === 'tags'
-                        ? 'bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]'
-                        : 'text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf]'
+                    onClick={() => setFilterTab("tags")}
+                    className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer relative border ${
+                      filterTab === "tags"
+                        ? "bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3] border-[#d4d3cf] dark:border-[#4a4d52]"
+                        : "text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf] border-[#e5e4e0] dark:border-[#4a4d52]"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-1.5">
                       Tags
                       {tempSelectedTags.length > 0 && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#a8956b]"></span>
                       )}
                     </span>
                   </button>
                   <button
-                    onClick={() => setFilterTab('date')}
-                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors cursor-pointer relative ${
-                      filterTab === 'date'
-                        ? 'bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]'
-                        : 'text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf]'
+                    onClick={() => setFilterTab("date")}
+                    className={`flex-1 py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer relative border ${
+                      filterTab === "date"
+                        ? "bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3] border-[#d4d3cf] dark:border-[#4a4d52]"
+                        : "text-[#6a6e73] dark:text-[#9aa0a6] hover:text-[#4f5358] dark:hover:text-[#c5c3bf] border-[#e5e4e0] dark:border-[#4a4d52]"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-1.5">
                       Date
                       {tempDateFilter && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#a8956b]"></span>
                       )}
                     </span>
                   </button>
@@ -314,7 +361,7 @@ function UserPosts() {
 
                 {/* Filter Content */}
                 <div className="p-3 max-h-80 overflow-y-auto">
-                  {filterTab === 'tags' ? (
+                  {filterTab === "tags" ? (
                     <>
                       {/* Tag Search Bar - Future feature: Will search from database tags */}
                       <div className="mb-3 relative">
@@ -324,37 +371,61 @@ function UserPosts() {
                           placeholder="Search tags"
                           value={tagSearchQuery}
                           onChange={(e) => setTagSearchQuery(e.target.value)}
-                          className="w-full pl-10 pr-3 py-2 text-sm rounded-lg border border-[#e5e4e0] dark:border-[#4a4d52] bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3] placeholder:text-[#9aa0a6] focus:outline-none focus:ring-2 focus:ring-[#a8956b] transition-colors"
+                          className="w-full pl-10 pr-3 py-2 text-sm rounded border border-[#e5e4e0] dark:border-[#4a4d52] bg-[#f8f7f4] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3] placeholder:text-[#9aa0a6] focus:outline-none focus:ring-2 focus:ring-[#a8956b] transition-colors"
                         />
                       </div>
-                      
+
                       {/* Tag List with Checkboxes */}
                       <div className="space-y-1.5">
                         {availableTags
-                          .filter(tag => tag.toLowerCase().includes(tagSearchQuery.toLowerCase()))
+                          .filter((tag) =>
+                            tag
+                              .toLowerCase()
+                              .includes(tagSearchQuery.toLowerCase())
+                          )
                           .map((tag) => (
                             <label
                               key={tag}
-                              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm cursor-pointer hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors"
+                              className="flex items-center gap-3 px-3 py-2 rounded text-sm cursor-pointer hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors"
                             >
-                              <input
-                                type="checkbox"
-                                checked={tempSelectedTags.includes(tag)}
-                                onChange={() => {
-                                  if (tempSelectedTags.includes(tag)) {
-                                    setTempSelectedTags(tempSelectedTags.filter(t => t !== tag));
-                                  } else {
-                                    setTempSelectedTags([...tempSelectedTags, tag]);
-                                  }
-                                }}
-                                className="w-4 h-4 rounded border-[#e5e4e0] dark:border-[#4a4d52] text-[#a8956b] focus:ring-[#a8956b] focus:ring-offset-0"
-                              />
-                              <span className="text-[#4f5358] dark:text-[#c5c3bf]">{tag}</span>
+                              <div className="relative flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={tempSelectedTags.includes(tag)}
+                                  onChange={() => {
+                                    if (tempSelectedTags.includes(tag)) {
+                                      setTempSelectedTags(
+                                        tempSelectedTags.filter(
+                                          (t) => t !== tag
+                                        )
+                                      );
+                                    } else {
+                                      setTempSelectedTags([
+                                        ...tempSelectedTags,
+                                        tag,
+                                      ]);
+                                    }
+                                  }}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-4 h-4 border-2 border-[#d4d3cf] dark:border-[#4a4d52] rounded peer-checked:bg-[#a8956b] peer-checked:border-[#a8956b] flex items-center justify-center transition-colors">
+                                  {tempSelectedTags.includes(tag) && (
+                                    <Check className="w-3 h-3 text-white" />
+                                  )}
+                                </div>
+                              </div>
+                              <span className="text-[#4f5358] dark:text-[#c5c3bf]">
+                                {tag}
+                              </span>
                             </label>
                           ))}
-                        
+
                         {/* No results message */}
-                        {availableTags.filter(tag => tag.toLowerCase().includes(tagSearchQuery.toLowerCase())).length === 0 && (
+                        {availableTags.filter((tag) =>
+                          tag
+                            .toLowerCase()
+                            .includes(tagSearchQuery.toLowerCase())
+                        ).length === 0 && (
                           <p className="text-center py-4 text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
                             No tags found
                           </p>
@@ -364,55 +435,63 @@ function UserPosts() {
                   ) : (
                     <div className="space-y-1.5">
                       <button
-                        onClick={() => setTempDateFilter('previous-day')}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
-                          tempDateFilter === 'previous-day'
-                            ? 'bg-[#f8f7f4] dark:bg-[#2a2d31]'
-                            : 'hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]'
+                        onClick={() => setTempDateFilter("previous-day")}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm transition-colors cursor-pointer ${
+                          tempDateFilter === "previous-day"
+                            ? "bg-[#f8f7f4] dark:bg-[#2a2d31]"
+                            : "hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]"
                         }`}
                       >
-                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">Previous day</span>
-                        {tempDateFilter === 'previous-day' && (
-                          <Check className="w-4 h-4 text-blue-500" />
+                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">
+                          Previous day
+                        </span>
+                        {tempDateFilter === "previous-day" && (
+                          <Check className="w-4 h-4 text-[#a8956b]" />
                         )}
                       </button>
                       <button
-                        onClick={() => setTempDateFilter('past-3-days')}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
-                          tempDateFilter === 'past-3-days'
-                            ? 'bg-[#f8f7f4] dark:bg-[#2a2d31]'
-                            : 'hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]'
+                        onClick={() => setTempDateFilter("past-3-days")}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm transition-colors cursor-pointer ${
+                          tempDateFilter === "past-3-days"
+                            ? "bg-[#f8f7f4] dark:bg-[#2a2d31]"
+                            : "hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]"
                         }`}
                       >
-                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">Past 3 days</span>
-                        {tempDateFilter === 'past-3-days' && (
-                          <Check className="w-4 h-4 text-blue-500" />
+                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">
+                          Past 3 days
+                        </span>
+                        {tempDateFilter === "past-3-days" && (
+                          <Check className="w-4 h-4 text-[#a8956b]" />
                         )}
                       </button>
                       <button
-                        onClick={() => setTempDateFilter('past-week')}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
-                          tempDateFilter === 'past-week'
-                            ? 'bg-[#f8f7f4] dark:bg-[#2a2d31]'
-                            : 'hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]'
+                        onClick={() => setTempDateFilter("past-week")}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm transition-colors cursor-pointer ${
+                          tempDateFilter === "past-week"
+                            ? "bg-[#f8f7f4] dark:bg-[#2a2d31]"
+                            : "hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]"
                         }`}
                       >
-                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">Past week</span>
-                        {tempDateFilter === 'past-week' && (
-                          <Check className="w-4 h-4 text-blue-500" />
+                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">
+                          Past week
+                        </span>
+                        {tempDateFilter === "past-week" && (
+                          <Check className="w-4 h-4 text-[#a8956b]" />
                         )}
                       </button>
                       <button
-                        onClick={() => setTempDateFilter('past-month')}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
-                          tempDateFilter === 'past-month'
-                            ? 'bg-[#f8f7f4] dark:bg-[#2a2d31]'
-                            : 'hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]'
+                        onClick={() => setTempDateFilter("past-month")}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded text-sm transition-colors cursor-pointer ${
+                          tempDateFilter === "past-month"
+                            ? "bg-[#f8f7f4] dark:bg-[#2a2d31]"
+                            : "hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31]"
                         }`}
                       >
-                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">Past month</span>
-                        {tempDateFilter === 'past-month' && (
-                          <Check className="w-4 h-4 text-blue-500" />
+                        <span className="text-[#4f5358] dark:text-[#c5c3bf]">
+                          Past month
+                        </span>
+                        {tempDateFilter === "past-month" && (
+                          <Check className="w-4 h-4 text-[#a8956b]" />
                         )}
                       </button>
                     </div>
@@ -423,17 +502,17 @@ function UserPosts() {
                 <div className="flex gap-2 p-3 border-t border-[#e5e4e0] dark:border-[#4a4d52]">
                   <button
                     onClick={clearFilters}
-                    className="flex-1 px-3 py-2 rounded-lg text-sm font-medium text-[#6a6e73] dark:text-[#9aa0a6] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors cursor-pointer"
+                    className="flex-1 px-3 py-2 rounded text-sm font-medium text-[#6a6e73] dark:text-[#9aa0a6] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors cursor-pointer"
                   >
                     Clear
                   </button>
                   <button
                     onClick={applyFilters}
                     disabled={!tempDateFilter && tempSelectedTags.length === 0}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
                       !tempDateFilter && tempSelectedTags.length === 0
-                        ? 'bg-[#9aa0a6] text-white cursor-not-allowed opacity-50'
-                        : 'bg-[#a8956b] hover:bg-[#96855f] text-white cursor-pointer'
+                        ? "bg-[#9aa0a6] text-white cursor-not-allowed opacity-50"
+                        : "bg-[#a8956b] hover:bg-[#96855f] text-white cursor-pointer"
                     }`}
                   >
                     Apply
@@ -444,32 +523,58 @@ function UserPosts() {
           </div>
         </div>
 
-        {/* Posts Table */}
-        <UserPostTable posts={currentPosts} onDelete={handleDelete} onRestore={handleRestore} />
+        {/* Posts Table or Empty State */}
+        <div className="relative z-10">
+          {filteredPosts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="text-center max-w-md">
+                <p className="text-lg text-[#4f5358] dark:text-[#c5c3bf] mb-2">
+                  {activeTab === "all" && "You haven't written any posts yet."}
+                  {activeTab === "published" && "No published posts yet."}
+                  {activeTab === "drafts" && "No drafts saved yet."}
+                  {activeTab === "deleted" && "Trash is empty."}
+                </p>
+                <p className="text-sm text-[#9aa0a6] dark:text-[#9aa0a6]">
+                  {activeTab === "all" && "Start your first story today."}
+                  {activeTab === "published" && "Publish your first story to see it here."}
+                  {activeTab === "drafts" && "Save a draft to see it here."}
+                  {activeTab === "deleted" && "Deleted posts will appear here."}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <UserPostTable
+              posts={currentPosts}
+              onDelete={handleDelete}
+              onRestore={handleRestore}
+            />
+          )}
+        </div>
 
         {/* Pagination */}
         {totalPosts > 0 && (
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-1">
             {/* Showing X-Y of Z posts */}
-            <div className="text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
-              Showing {startIndex + 1}-{Math.min(endIndex, totalPosts)} of {totalPosts} posts
+            <div className="text-sm text-[#6a6e73] dark:text-[#9aa0a6] order-2 sm:order-1">
+              Showing {startIndex + 1}-{Math.min(endIndex, totalPosts)} of{" "}
+              {totalPosts} posts
             </div>
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 order-1 sm:order-2 overflow-x-auto max-w-full">
                 {/* Previous Button */}
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                     currentPage === 1
-                      ? 'text-[#9aa0a6] dark:text-[#6a6e73] cursor-not-allowed'
-                      : 'text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c] cursor-pointer'
+                      ? "text-[#9aa0a6] dark:text-[#6a6e73] cursor-not-allowed"
+                      : "text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c] cursor-pointer"
                   }`}
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Previous
+                  <span className="hidden sm:inline">Previous</span>
                 </button>
 
                 {/* Page Numbers */}
@@ -480,11 +585,15 @@ function UserPosts() {
                     const showPage =
                       pageNumber === 1 ||
                       pageNumber === totalPages ||
-                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1);
+                      (pageNumber >= currentPage - 1 &&
+                        pageNumber <= currentPage + 1);
 
                     // Show ellipsis
-                    const showEllipsisBefore = pageNumber === currentPage - 2 && currentPage > 3;
-                    const showEllipsisAfter = pageNumber === currentPage + 2 && currentPage < totalPages - 2;
+                    const showEllipsisBefore =
+                      pageNumber === currentPage - 2 && currentPage > 3;
+                    const showEllipsisAfter =
+                      pageNumber === currentPage + 2 &&
+                      currentPage < totalPages - 2;
 
                     if (showEllipsisBefore || showEllipsisAfter) {
                       return (
@@ -503,10 +612,10 @@ function UserPosts() {
                       <button
                         key={pageNumber}
                         onClick={() => setCurrentPage(pageNumber)}
-                        className={`min-w-8 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                        className={`min-w-8 px-2 sm:px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
                           currentPage === pageNumber
-                            ? 'bg-[#a8956b] text-white'
-                            : 'text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c]'
+                            ? "bg-[#a8956b] text-white"
+                            : "text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c]"
                         }`}
                       >
                         {pageNumber}
@@ -519,13 +628,13 @@ function UserPosts() {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-2 sm:px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                     currentPage === totalPages
-                      ? 'text-[#9aa0a6] dark:text-[#6a6e73] cursor-not-allowed'
-                      : 'text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c] cursor-pointer'
+                      ? "text-[#9aa0a6] dark:text-[#6a6e73] cursor-not-allowed"
+                      : "text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#35383c] cursor-pointer"
                   }`}
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>

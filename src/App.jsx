@@ -10,6 +10,7 @@ import AllPosts from "./Pages/AllPosts";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import AuthCallback from "./Pages/AuthCallback";
+import UserPosts from "./Pages/UserPosts";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,14 @@ const router = createBrowserRouter([
           <ProtectedRoute authentication>
             {" "}
             <EditPost />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "user-posts",
+        element: (
+          <ProtectedRoute authentication>
+            <UserPosts />
           </ProtectedRoute>
         ),
       },

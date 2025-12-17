@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import postService from "@/appwrite/post";
 import profileService from "@/appwrite/profile";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
-function PostCard({ $id, title, subtitle = "This is a subtitle", featuredImage, userId, $createdAt }) {
+function PostCard({ $id, title, subtitle, featuredImage, userId, $createdAt }) {
   const [authorName, setAuthorName] = useState("Anonymous");
-  const isDark = useSelector((state) => state.theme.mode === "dark");
 
   useEffect(() => {
     const fetchAuthor = async () => {

@@ -5,19 +5,22 @@ import postService from "@/appwrite/post";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost, editPost } from "@/store/postSlice";
-import { X } from "lucide-react";
+import { X, ChevronDown, Trash2 } from "lucide-react";
 
 function PostForm({ post }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [removeExistingCover, setRemoveExistingCover] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(Boolean(post?.subtitle));
+  const [showDropdown, setShowDropdown] = useState(false);
   const subtitleInputRef = useRef(null);
+  const dropdownRef = useRef(null);
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
         slug: post?.$id || "",
         content: post?.content || "",
+        publishStatus: post?.publishStatus || "published",
         status: post?.status || "active",
         subtitle: post?.subtitle || "",
       },
@@ -55,6 +58,22 @@ function PostForm({ post }) {
     }
   }, [showSubtitle]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
   const submit = async (data) => {
     if (post) {
       const file = data.image[0]
@@ -90,6 +109,7 @@ function PostForm({ post }) {
         const newDbPost = await postService.createPost({
           ...data,
           userId: userData.$id,
+          authorName: userData.name,
         });
 
         if (newDbPost) {
@@ -106,7 +126,10 @@ function PostForm({ post }) {
         .trim()
         .toLowerCase()
         .replace(/[^a-zA-Z\d\s]+/g, "-")
-        .replace(/\s/g, "-");
+        .replace(/\s/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 36);
 
     return "";
   }, []);
@@ -144,33 +167,115 @@ function PostForm({ post }) {
             >
               {post ? "Update" : "Publish"}
             </Button>
-          </div>
-
-          {/* Slug and Status Toggle in top right */}
-          <div className="flex items-center gap-6">
+            {/* Dropdown Menu - Only when editing */}
             {post && (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-[#4f5358] dark:text-[#c5c3bf]">Status:</span>
-                <button
+              <div ref={dropdownRef} className="relative">
+                <Button
                   type="button"
-                  onClick={() => setValue("status", watch("status") === "active" ? "inactive" : "active")}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                    watch("status") === "active" 
-                      ? "bg-[#a8956b]" 
-                      : "bg-[#d0cdc7] dark:bg-[#5a5d61]"
-                  }`}
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center gap-1 px-3 py-2 text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/5"
                 >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      watch("status") === "active" ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-                <span className="text-sm font-medium text-[#4f5358] dark:text-[#c5c3bf]">
-                  {watch("status") === "active" ? "Active" : "Inactive"}
-                </span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+
+                {/* Dropdown Content */}
+                {showDropdown && (
+                  <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-[#35383c] rounded-xl shadow-2xl z-50 border border-[#e5e4e0] dark:border-[#4a4d52] overflow-hidden">
+                    {/* Publish Status Toggle */}
+                    <div className="px-4 py-4 border-b border-[#e5e4e0] dark:border-[#4a4d52]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-[#4f5358] dark:text-[#c5c3bf]">Publish Status</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setValue("publishStatus", watch("publishStatus") === "published" ? "draft" : "published")}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                              watch("publishStatus") === "published" 
+                                ? "bg-[#a8956b]" 
+                                : "bg-[#d0cdc7] dark:bg-[#5a5d61]"
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                watch("publishStatus") === "published" ? "translate-x-6" : "translate-x-1"
+                              }`}
+                            />
+                          </button>
+                          <span className="text-xs font-medium text-[#4f5358] dark:text-[#c5c3bf]">
+                            {watch("publishStatus") === "published" ? "Published" : "Draft"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Move to Trash/Restore Button */}
+                    <div className="p-2">
+                      {watch("status") === "active" ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (window.confirm("Are you sure you want to move this post to trash? You can restore it later.")) {
+                              try {
+                                const updatedPost = await postService.updatePost(post.$id, {
+                                  title: watch("title"),
+                                  content: watch("content"),
+                                  featuredImage: post.featuredImage,
+                                  status: "deleted",
+                                  publishStatus: watch("publishStatus"),
+                                });
+                                if (updatedPost) {
+                                  setValue("status", "deleted");
+                                  dispatch(editPost({ post: updatedPost }));
+                                  setShowDropdown(false);
+                                }
+                              } catch (error) {
+                                console.error("Error moving post to trash:", error);
+                              }
+                            }
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Move to Trash</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              const updatedPost = await postService.updatePost(post.$id, {
+                                title: watch("title"),
+                                content: watch("content"),
+                                featuredImage: post.featuredImage,
+                                status: "active",
+                                publishStatus: watch("publishStatus"),
+                              });
+                              if (updatedPost) {
+                                setValue("status", "active");
+                                dispatch(editPost({ post: updatedPost }));
+                                setShowDropdown(false);
+                              }
+                            } catch (error) {
+                              console.error("Error restoring post:", error);
+                            }
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-950/20 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          <span>Restore Post</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+          </div>
+
+          {/* Slug in top right */}
+          <div className="flex items-center gap-6">
             <div className="text-sm font-mono text-[#4f5358] dark:text-[#c5c3bf] opacity-60">
               /{watch("slug") || "your-slug"}
             </div>
@@ -298,10 +403,16 @@ function PostForm({ post }) {
             }}
           />
           {!post && (
-            <Input
-              type="hidden"
-              {...register("status")}
-            />
+            <>
+              <Input
+                type="hidden"
+                {...register("publishStatus")}
+              />
+              <Input
+                type="hidden"
+                {...register("status")}
+              />
+            </>
           )}
         </div>
       </div>

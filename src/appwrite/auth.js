@@ -97,7 +97,7 @@ export class Service {
 
       // Check if profile exists, if not create one
       try {
-        await profileService.getProfile(user.$id);
+        await profileService.getProfile(user.$id); // TODO: Error here fix this
       } catch (error) {
         // Profile doesn't exist, create it
         await profileService.createProfile({

@@ -4,6 +4,7 @@ import { PostCard, Button } from "@/Components";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "@/store/postSlice";
 import { useNavigate } from "react-router-dom";
+import { Query } from "appwrite";
 
 function AllPosts() {
   const dispatch = useDispatch();
@@ -12,12 +13,21 @@ function AllPosts() {
   const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
-    postService.getPosts([]).then((posts) => {
-      if (posts) {
-        dispatch(setPosts({ posts: posts.rows }));
-      }
-    });
+    postService
+      .getPosts([
+        Query.equal("publishStatus", "published"),
+        Query.equal("status", "active"),
+      ])
+      .then((posts) => {
+        if (posts) {
+          dispatch(setPosts({ posts: posts.rows }));
+        }
+      });
   }, []);
+
+  const handleViewYourPosts = () => {
+    navigate("/user-posts");
+  };
 
   return (
     <div className="bg-[#f5f4f0] dark:bg-[#2a2d31]">
@@ -28,7 +38,8 @@ function AllPosts() {
             Welcome to Quibly, {userData?.name || "Writer"}
           </h1>
           <p className="text-lg text-[#6a6e73] dark:text-[#9aa0a6] mb-8 max-w-2xl mx-auto font-light">
-            Join a growing community of thinkers, storytellers, and creators — start writing today.
+            Join a growing community of thinkers, storytellers, and creators —
+            start writing today.
           </p>
           <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
             <button
@@ -38,7 +49,7 @@ function AllPosts() {
               Write a Post
             </button>
             <button
-              onClick={() => {/* Dummy button */}}
+              onClick={handleViewYourPosts}
               className="border border-[#d0cdc7] dark:border-[#5a5d61] text-[#6a6e73] dark:text-[#9aa0a6] hover:border-[#a8a5a0] dark:hover:border-[#7a7d81] px-6 py-2 text-sm font-normal transition-all cursor-pointer"
             >
               View your posts
@@ -58,19 +69,19 @@ function AllPosts() {
           <h2 className="text-3xl font-normal text-[#1f2226] dark:text-[#e8e6e3] mb-18 text-center italic">
             Stories from our community
           </h2>
-        {posts.length === 0 ? (
-          <div className="text-center py-20 min-h-[30vh] flex items-center justify-center">
-            <p className="text-xl text-[#4f5358] dark:text-[#c5c3bf]">
-              No posts yet. Be the first to share your story!
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <PostCard key={post.$id} {...post} />
-            ))}
-          </div>
-        )}
+          {posts.length === 0 ? (
+            <div className="text-center py-20 min-h-[30vh] flex items-center justify-center">
+              <p className="text-xl text-[#4f5358] dark:text-[#c5c3bf]">
+                No posts yet. Be the first to share your story!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <PostCard key={post.$id} {...post} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

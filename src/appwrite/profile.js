@@ -29,6 +29,7 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: createProfile :: error ", error);
+            throw error;
         }
     }
 
@@ -41,6 +42,7 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: getProfile :: error ", error);
+            throw error;
         }
     }
 
@@ -59,6 +61,7 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: updateProfile :: error ", error);
+            throw error;
         }   
     }
 
@@ -72,6 +75,7 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: listProfiles :: error ", error);
+            throw error;
         }
     }
 

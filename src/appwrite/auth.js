@@ -75,7 +75,7 @@ export class Service {
     try {
       const baseUrl = window.location.origin;
 
-      return this.account.createOAuth2Token({
+      return this.account.createOAuth2Session({
         // use createOAuth2Session here
         provider,
         // success: `${baseUrl}/`,
@@ -88,34 +88,32 @@ export class Service {
     }
   }
 
-  async handleOAuth2Callback(userId, secret) {
+  async handleOAuth2Callback() {
+  try {
+    // Session is already created by Appwrite
+    const user = await this.account.get();
+
+    // Ensure profile exists
     try {
-      // Create a session using the OAuth2 token
-      await this.account.createSession({ userId, secret });
-
-      // Get the user data
-      const user = await this.account.get();
-
-      // Check if profile exists, if not create one
-      try {
-        await profileService.getProfile(user.$id); // TODO: Error here fix this
-      } catch (error) {
-        // Profile doesn't exist, create it
-        await profileService.createProfile({
-          userId: user.$id,
-          name: user.name,
-          age: null,
-          bio: "",
-          avatar: null,
-        });
-      }
-
-      return user;
-    } catch (error) {
-      console.log("Appwrite service :: handleOAuth2Callback :: error", error);
-      throw error;
+      await profileService.getProfile(user.$id);
+    } catch {
+      // Profile doesn't exist → create one
+      await profileService.createProfile({
+        userId: user.$id,
+        name: user.name,
+        age: null,
+        bio: "",
+        avatar: null,
+      });
     }
+
+    return user;
+  } catch (error) {
+    console.log("Appwrite service :: handleOAuth2Callback :: error", error);
+    throw error;
   }
+}
+
 
   async deleteAccount() {
     try {

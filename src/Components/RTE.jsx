@@ -3,6 +3,12 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 
+// Prefer local copy when requested; otherwise use CDN. Set `VITE_TINYMCE_LOCAL=true`
+// in your .env to load `/tinymce/tinymce.min.js` (copied to `public/tinymce`).
+const TINYMCE_USE_LOCAL = import.meta.env.VITE_TINYMCE_LOCAL === "true";
+const TINYMCE_CDN = `https://cdn.tiny.cloud/1/${import.meta.env.VITE_TINYMCE_API_KEY || 'no-api-key'}/tinymce/6/tinymce.min.js`;
+const TINYMCE_SRC = TINYMCE_USE_LOCAL ? "/tinymce/tinymce.min.js" : TINYMCE_CDN;
+
 export default function RTE({
   label,
   name,
@@ -24,7 +30,7 @@ export default function RTE({
         render={({ field: { onChange } }) => (
           <Editor
             key={isDark ? 'dark' : 'light'}
-            tinymceScriptSrc="/node_modules/tinymce/tinymce.min.js"
+            tinymceScriptSrc={TINYMCE_SRC}
             licenseKey="gpl"
             apiKey="2yuwar8xgmih8cez9oi06kcwvx3sk20hx3z8af2ovt8u0da6"
             onInit={(evt, editor) => {

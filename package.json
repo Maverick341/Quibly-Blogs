@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "copy-tinymce": "node ./scripts/copy-tinymce.js",
+    "postinstall": "node ./scripts/copy-tinymce.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.0",

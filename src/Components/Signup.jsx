@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import authService from "@/appwrite/auth";
 import profileService from "@/appwrite/profile";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,8 +11,10 @@ import { useOAuth } from "@/hooks/useOAuth";
 import { OAuthProvider } from "appwrite";
 import GithubLogo from "@/assets/github-mark-white.svg";
 import GithubLogoDark from "@/assets/github-mark.svg";
+import { Eye, EyeClosed } from "lucide-react";
 
 function Signup({ onToggle = () => {}, isDarkMode = true }) {
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -49,17 +51,19 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
 
         if (userData) {
           dispatch(authLogin({ userData }));
-          
+
           // Profile is already created, just dispatch the data we have
-          dispatch(updateProfile({ 
-            profile: {
-              name: data.name,
-              age: data.age ? Number(data.age) : null,
-              bio: data.bio || "",
-              avatar: null,
-            }
-          }));
-          
+          dispatch(
+            updateProfile({
+              profile: {
+                name: data.name,
+                age: data.age ? Number(data.age) : null,
+                bio: data.bio || "",
+                avatar: null,
+              },
+            })
+          );
+
           navigate("/");
         }
       }
@@ -67,6 +71,8 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
       setAuthError(error.message);
     }
   };
+
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   return (
     <>
@@ -150,11 +156,11 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
           </div>
 
           {/* Password field */}
-          <div>
+          <div className="relative">
             <Input
               label="Password"
-              type="password"
-              placeholder="••••••••"
+              type={`${showPassword ? "text" : "password"}`}
+              placeholder={showPassword ? "Enter a password" : "••••••••"}
               {...register("password", {
                 required: true,
                 validate: {
@@ -177,6 +183,18 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
               })}
               errors={errors.password}
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-10 -translate-y-1/2 text-[#7a7f86] dark:text-[#b3b1ad] hover:text-[#a8956b] focus:outline-none"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeClosed size={18} strokeWidth={1} />
+              ) : (
+                <Eye size={18} strokeWidth={1} />
+              )}
+            </button>
           </div>
 
           {/* Submit button */}

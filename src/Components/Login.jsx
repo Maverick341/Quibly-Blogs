@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { login as authLogin, updateProfile } from "@/store/authSlice";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Input } from ".";
@@ -10,8 +10,11 @@ import { useOAuth } from "@/hooks/useOAuth";
 import { OAuthProvider } from "appwrite";
 import GithubLogo from "@/assets/github-mark-white.svg";
 import GithubLogoDark from "@/assets/github-mark.svg";
+import { Eye, EyeClosed } from "lucide-react";
 
 function Login({ onToggle = () => {}, isDarkMode = true }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -57,6 +60,8 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
     }
   };
 
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
   return (
     <>
       <div className="max-w-sm mx-auto lg:mx-0 rounded-lg p-6 bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
@@ -84,11 +89,11 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
           </div>
 
           {/* Password field */}
-          <div>
+          <div className="relative">
             <Input
               label="Password"
-              type="password"
-              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              placeholder={showPassword ? "Enter your password" : "••••••••"}
               {...register("password", {
                 required: true,
                 validate: {
@@ -111,6 +116,18 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
               })}
               errors={errors.password}
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-10 -translate-y-1/2 text-[#7a7f86] dark:text-[#b3b1ad] hover:text-[#a8956b] focus:outline-none"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeClosed size={18} strokeWidth={1} />
+              ) : (
+                <Eye size={18} strokeWidth={1} />
+              )}
+            </button>
           </div>
 
           {/* Submit button */}

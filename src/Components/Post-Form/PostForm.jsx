@@ -20,6 +20,7 @@ function PostForm({ post }) {
     useForm({
       defaultValues: {
         title: post?.title || "",
+        subtitle: post?.subtitle || "",
         slug: post?.$id || "",
         content: post?.content || "",
         publishStatus: post?.publishStatus || "published",
@@ -139,7 +140,7 @@ function PostForm({ post }) {
 
         const newDbPost = await postService.createPost({
           ...data,
-          userId: [userData.$id],
+          userId: userData.$id,
           authorName: userData.name,
         });
 

@@ -139,7 +139,7 @@ function PostForm({ post }) {
 
         const newDbPost = await postService.createPost({
           ...data,
-          userId: userData.$id,
+          userId: [userData.$id],
           authorName: userData.name,
         });
 

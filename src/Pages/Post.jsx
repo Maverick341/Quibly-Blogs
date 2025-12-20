@@ -103,12 +103,12 @@ export default function Post() {
       <div className="max-w-[720px] mx-auto">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/all-posts")}
           className="inline-flex items-center gap-2 my-4 sm:mb-6 px-2 sm:px-3 py-2 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#1f2226] dark:hover:text-[#e8e6e3] transition-colors cursor-pointer"
           title="Go back"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          {/* <span>Back</span> */}
         </button>
 
         {/* Featured Image first */}

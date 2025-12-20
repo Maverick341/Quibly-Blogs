@@ -16,18 +16,25 @@ function PostForm({ post }) {
   const [submitAttempt, setSubmitAttempt] = useState(0);
   const subtitleInputRef = useRef(null);
   const dropdownRef = useRef(null);
-  const { register, handleSubmit, watch, setValue, control, getValues, formState: { errors } } =
-    useForm({
-      defaultValues: {
-        title: post?.title || "",
-        subtitle: post?.subtitle || "",
-        slug: post?.$id || "",
-        content: post?.content || "",
-        publishStatus: post?.publishStatus || "published",
-        status: post?.status || "active",
-        subtitle: post?.subtitle || "",
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: post?.title || "",
+      subtitle: post?.subtitle || "",
+      slug: post?.$id || "",
+      content: post?.content || "",
+      publishStatus: post?.publishStatus || "published",
+      status: post?.status || "active",
+      subtitle: post?.subtitle || "",
+    },
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -81,7 +88,7 @@ function PostForm({ post }) {
   useEffect(() => {
     if (submitAttempt > 0) {
       const newVisibleErrors = {};
-      Object.keys(errors).forEach(key => {
+      Object.keys(errors).forEach((key) => {
         newVisibleErrors[key] = true;
       });
       setVisibleErrors(newVisibleErrors);
@@ -99,10 +106,10 @@ function PostForm({ post }) {
   const submit = async (data) => {
     // Show confirmation alert before publishing/updating
     const action = post ? "update" : "publish";
-    const message = post 
-      ? "Are you sure you want to update this post?" 
+    const message = post
+      ? "Are you sure you want to update this post?"
       : "Are you sure you want to publish this post?";
-    
+
     if (!window.confirm(message)) {
       return;
     }
@@ -121,7 +128,7 @@ function PostForm({ post }) {
       });
 
       if (dbPost) {
-        dispatch(editPost({ post: dbPost }))
+        dispatch(editPost({ post: dbPost }));
         navigate(`/post/${dbPost.$id}`);
       }
     } else {
@@ -132,7 +139,7 @@ function PostForm({ post }) {
       if (file) {
         const fileId = file.$id;
         data.featuredImage = fileId;
-        
+
         if (!userData) {
           console.error("User data not available");
           return;
@@ -178,20 +185,30 @@ function PostForm({ post }) {
     };
   }, [watch, slugTransform, setValue]);
 
-  const hasCover = Boolean(((post && post.featuredImage && !removeExistingCover)) || previewImage);
+  const hasCover = Boolean(
+    (post && post.featuredImage && !removeExistingCover) || previewImage
+  );
 
   return (
-    <form onSubmit={(e) => {
-      setSubmitAttempt(prev => prev + 1);
-      handleSubmit(submit)(e);
-    }} className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]">
+    <form
+      onSubmit={(e) => {
+        setSubmitAttempt((prev) => prev + 1);
+        handleSubmit(submit)(e);
+      }}
+      className="min-h-screen bg-[#f5f4f0] dark:bg-[#2a2d31] text-[#1f2226] dark:text-[#e8e6e3]"
+    >
       <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
         {/* Buttons and Slug - Simple layout without navbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-6 sm:mb-8 md:mb-12">
           <div className="flex items-center gap-1.5 sm:gap-1">
             <Button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (post && window.confirm("This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.")) {
+                  navigate(`/post/${post.$id}`);
+                }
+                navigate("/all-posts");
+              }}
               className="inline-flex items-center justify-center p-1.5 sm:p-1 text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/5"
               title="Go back"
             >
@@ -232,42 +249,54 @@ function PostForm({ post }) {
                           <button
                             type="button"
                             onClick={async () => {
-                              if (window.confirm("Are you sure you want to move this post to trash? You can restore it later.")) {
+                              if (
+                                window.confirm(
+                                  "Are you sure you want to move this post to trash? You can restore it later."
+                                )
+                              ) {
                                 try {
-                                  const updatedPost = await postService.updatePost(post.$id, {
-                                    title: watch("title"),
-                                    content: watch("content"),
-                                    featuredImage: post.featuredImage,
-                                    status: "deleted",
-                                    publishStatus: watch("publishStatus"),
-                                  });
+                                  const updatedPost =
+                                    await postService.updatePost(post.$id, {
+                                      title: watch("title"),
+                                      content: watch("content"),
+                                      featuredImage: post.featuredImage,
+                                      status: "deleted",
+                                      publishStatus: watch("publishStatus"),
+                                    });
                                   if (updatedPost) {
                                     setValue("status", "deleted");
                                     dispatch(editPost({ post: updatedPost }));
                                     setShowDropdown(false);
                                   }
                                 } catch (error) {
-                                  console.error("Error moving post to trash:", error);
+                                  console.error(
+                                    "Error moving post to trash:",
+                                    error
+                                  );
                                 }
                               }
                             }}
                             className="flex items-center justify-center p-2 sm:p-2.5 text-[#c9302c] dark:text-[#ff6b6b] hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] rounded-lg transition-all duration-150 cursor-pointer"
                             title="Move to Trash"
                           >
-                            <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0" strokeWidth={2} />
+                            <Trash2
+                              className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
+                              strokeWidth={2}
+                            />
                           </button>
                         ) : (
                           <button
                             type="button"
                             onClick={async () => {
                               try {
-                                const updatedPost = await postService.updatePost(post.$id, {
-                                  title: watch("title"),
-                                  content: watch("content"),
-                                  featuredImage: post.featuredImage,
-                                  status: "active",
-                                  publishStatus: watch("publishStatus"),
-                                });
+                                const updatedPost =
+                                  await postService.updatePost(post.$id, {
+                                    title: watch("title"),
+                                    content: watch("content"),
+                                    featuredImage: post.featuredImage,
+                                    status: "active",
+                                    publishStatus: watch("publishStatus"),
+                                  });
                                 if (updatedPost) {
                                   setValue("status", "active");
                                   dispatch(editPost({ post: updatedPost }));
@@ -280,8 +309,18 @@ function PostForm({ post }) {
                             className="flex items-center justify-center p-2 sm:p-2.5 text-[#5cb85c] dark:text-[#51cf66] hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] rounded-lg transition-all duration-150 cursor-pointer"
                             title="Restore Post"
                           >
-                            <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            <svg
+                              className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                              />
                             </svg>
                           </button>
                         )}
@@ -292,26 +331,40 @@ function PostForm({ post }) {
                         {/* Publish Status Toggle */}
                         <div className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-[#f0ede8] dark:bg-[#2f3236] rounded-lg">
                           <span className="text-[10px] sm:text-xs font-medium text-[#3a3a3a] dark:text-[#e0deda] whitespace-nowrap">
-                            {watch("publishStatus") === "published" ? "Published" : "Draft"}
+                            {watch("publishStatus") === "published"
+                              ? "Published"
+                              : "Draft"}
                           </span>
                           <button
                             type="button"
-                            onClick={() => setValue("publishStatus", watch("publishStatus") === "published" ? "draft" : "published")}
+                            onClick={() =>
+                              setValue(
+                                "publishStatus",
+                                watch("publishStatus") === "published"
+                                  ? "draft"
+                                  : "published"
+                              )
+                            }
                             className={`relative inline-flex h-4 w-8 sm:h-5 sm:w-9 items-center rounded-full transition-colors cursor-pointer shrink-0 ${
-                              watch("publishStatus") === "published" 
-                                ? "bg-[#a8956b]" 
+                              watch("publishStatus") === "published"
+                                ? "bg-[#a8956b]"
                                 : "bg-[#d0cdc7] dark:bg-[#5a5d61]"
                             }`}
-                            title={watch("publishStatus") === "published" ? "Switch to Draft" : "Switch to Published"}
+                            title={
+                              watch("publishStatus") === "published"
+                                ? "Switch to Draft"
+                                : "Switch to Published"
+                            }
                           >
                             <span
                               className={`inline-block h-3 w-3 sm:h-3.5 sm:w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${
-                                watch("publishStatus") === "published" ? "translate-x-4 sm:translate-x-4.5" : "translate-x-0.5"
+                                watch("publishStatus") === "published"
+                                  ? "translate-x-4 sm:translate-x-4.5"
+                                  : "translate-x-0.5"
                               }`}
                             />
                           </button>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -333,10 +386,18 @@ function PostForm({ post }) {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => document.getElementById("featured-image-input").click()}
+                onClick={() =>
+                  document.getElementById("featured-image-input").click()
+                }
                 className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg
+                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
                   <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
                   <circle cx="8" cy="9" r="2" />
                   <path d="M21 19l-6-6-4 4-2-2-5 4" />
@@ -356,8 +417,18 @@ function PostForm({ post }) {
               onClick={() => setShowSubtitle(true)}
               className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               <span className="text-xs sm:text-sm">Add Subtitle</span>
             </button>
@@ -365,10 +436,15 @@ function PostForm({ post }) {
         </div>
         {/* Add Cover Section */}
         <div className="mb-6 sm:mb-8">
-          {(((post && post.featuredImage) && !removeExistingCover) || previewImage) ? (
+          {(post && post.featuredImage && !removeExistingCover) ||
+          previewImage ? (
             <div className="relative mb-4 sm:mb-6">
               <img
-                src={(post && post.featuredImage && !removeExistingCover) ? postService.getFileView(post.featuredImage) : previewImage}
+                src={
+                  post && post.featuredImage && !removeExistingCover
+                    ? postService.getFileView(post.featuredImage)
+                    : previewImage
+                }
                 alt={post?.title || "Preview"}
                 className="w-full rounded-lg max-h-64 sm:max-h-96 object-cover"
               />
@@ -378,7 +454,7 @@ function PostForm({ post }) {
                   setPreviewImage(null);
                   setRemoveExistingCover(true);
                   const input = document.getElementById("featured-image-input");
-                  if (input) input.value = '';
+                  if (input) input.value = "";
                 }}
                 className="absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white/70 dark:bg-black/50 rounded-lg hover:bg-white/90 dark:hover:bg-black/70 shadow-lg backdrop-blur-sm transition-all cursor-pointer"
                 title="Remove cover"
@@ -392,11 +468,11 @@ function PostForm({ post }) {
             type="file"
             accept="image/png, image/jpg, image/jpeg, image/gif"
             className="hidden"
-            {...register("image", { required: !post ? "Cover image is required" : false })}
+            {...register("image", {
+              required: !post ? "Cover image is required" : false,
+            })}
           />
         </div>
-
-        
 
         {/* Title Input */}
         <div className="mb-4">
@@ -428,7 +504,10 @@ function PostForm({ post }) {
             <button
               type="button"
               onClick={() => {
-                setValue("subtitle", "", { shouldDirty: true, shouldValidate: true });
+                setValue("subtitle", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
                 setShowSubtitle(false);
               }}
               aria-label="Remove subtitle"
@@ -471,14 +550,8 @@ function PostForm({ post }) {
           />
           {!post && (
             <>
-              <Input
-                type="hidden"
-                {...register("publishStatus")}
-              />
-              <Input
-                type="hidden"
-                {...register("status")}
-              />
+              <Input type="hidden" {...register("publishStatus")} />
+              <Input type="hidden" {...register("status")} />
             </>
           )}
         </div>

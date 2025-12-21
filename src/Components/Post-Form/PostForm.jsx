@@ -32,7 +32,6 @@ function PostForm({ post }) {
       content: post?.content || "",
       publishStatus: post?.publishStatus || "published",
       status: post?.status || "active",
-      subtitle: post?.subtitle || "",
     },
   });
 

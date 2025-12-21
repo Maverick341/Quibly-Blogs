@@ -15,6 +15,8 @@ import { Eye, EyeClosed } from "lucide-react";
 
 function Signup({ onToggle = () => {}, isDarkMode = true }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -42,6 +44,7 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
 
   const create = async (data) => {
     setAuthError("");
+    setIsSigningUp(true);
 
     try {
       const userAccount = await authService.createAccount(data);
@@ -69,6 +72,8 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
       }
     } catch (error) {
       setAuthError(error.message);
+    } finally {
+      setIsSigningUp(false);
     }
   };
 
@@ -200,9 +205,20 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
           {/* Submit button */}
           <Button
             type="submit"
+            disabled={isSigningUp}
             className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer"
           >
-            Sign up
+            {isSigningUp ? (
+              <span className="flex items-center justify-center gap-2">
+                <span
+                  className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+                <span>Signing Up...</span>
+              </span>
+            ) : (
+              "Sign Up"
+            )}
           </Button>
         </form>
 
@@ -228,9 +244,14 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
             className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
             <img
-              src={isDarkMode ? GithubLogo : GithubLogoDark}
-              alt="GitHub"
-              className="h-5 w-5"
+              src={GithubLogo}
+              alt="Quibly"
+              className="hidden dark:block h-5 w-5 object-contain object-center"
+            />
+            <img
+              src={GithubLogoDark}
+              alt="Quibly"
+              className="block dark:hidden h-5 w-5 object-contain object-center"
             />
             <span>Continue with Github</span>
           </Button>

@@ -14,6 +14,7 @@ import { Eye, EyeClosed } from "lucide-react";
 
 function Login({ onToggle = () => {}, isDarkMode = true }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
 
   const login = async (data) => {
     setAuthError("");
+    setIsLoggingIn(true);
+
     try {
       const session = await authService.login(data);
       if (session) {
@@ -46,7 +49,7 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
 
         if (userData) {
           dispatch(authLogin({ userData }));
-          
+
           // Fetch and merge profile data
           const profile = await profileService.getProfile(userData.$id);
           if (profile) {
@@ -57,6 +60,8 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
       }
     } catch (error) {
       setAuthError(error.message);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -133,9 +138,20 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
           {/* Submit button */}
           <Button
             type="submit"
+            disabled={isLoggingIn}
             className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer"
           >
-            Log in
+            {isLoggingIn ? (
+              <span className="flex items-center justify-center gap-2">
+                <span
+                  className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+                <span>Logging in...</span>
+              </span>
+            ) : (
+              "Log In"
+            )}
           </Button>
         </form>
 
@@ -144,7 +160,9 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
             <span className="w-full border-t border-[#d5d2cc] dark:border-[#c5c3bf] opacity-50" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-[#f5f4f0] dark:bg-[#2a2d31] px-2 text-[#4f5358] dark:text-[#c5c3bf]">or</span>
+            <span className="bg-[#f5f4f0] dark:bg-[#2a2d31] px-2 text-[#4f5358] dark:text-[#c5c3bf]">
+              or
+            </span>
           </div>
         </div>
 
@@ -158,8 +176,16 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
             }
             className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
-            <img src={isDarkMode ? GithubLogo : GithubLogoDark} alt="GitHub" className="h-5 w-5" />
-            <span>Continue with Github</span>
+            <img
+              src={GithubLogo}
+              alt="Quibly"
+              className="hidden dark:block h-5 w-5 object-contain object-center"
+            />
+            <img
+              src={GithubLogoDark}
+              alt="Quibly"
+              className="block dark:hidden h-5 w-5 object-contain object-center"
+            />
           </Button>
           {/* Add more OAuth providers if needed */}
         </div>
@@ -180,7 +206,7 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
           <div className="mt-5 text-center text-xs font-sans text-[#4f5358] dark:text-[#c5c3bf]">
             Don&apos;t have any account?&nbsp;
             <Link
-            to="/signup"
+              to="/signup"
               className="text-xs font-sans text-[#8c7a57] hover:text-[#7d6c4f] dark:text-[#a8956b] dark:hover:text-[#9a8760] transition-colors cursor-pointer"
             >
               Sign up

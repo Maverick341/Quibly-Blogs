@@ -13,9 +13,9 @@ function Layout() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const authStatus = useSelector((state) => state.auth.status);
+  const authStatus = useSelector((state) => state.auth.status);
 
   const isLandingPage = location.pathname === "/";
   const isAuthPage =
@@ -32,19 +32,28 @@ function Layout() {
             if (profile) {
               dispatch(updateProfile({ profile }));
             }
+          }).catch(async () => {
+            await profileService.createProfile({
+              userId: userData.$id,
+              name: userData.name,
+              age: null,
+              bio: "",
+              avatar: null,
+            });
           });
         } else {
           dispatch(logout());
         }
-      })
-      .finally(() => setLoading(false));
+      }).catch(() => { console.log("This is error");
+       }
+      ).finally(() => setLoading(false));
   }, []);
 
-  // useEffect(() => {
-  //   if (!loading && authStatus && location.pathname === "/") {
-  //     navigate('/all-posts');
-  //   }
-  // }, [loading, authStatus, location.pathname, navigate]);
+  useEffect(() => {
+    if (!loading && authStatus && location.pathname === "/") {
+      navigate('/all-posts');
+    }
+  }, [loading, authStatus, location.pathname, navigate]);
 
   if (loading && location.pathname !== "/") {
     return (

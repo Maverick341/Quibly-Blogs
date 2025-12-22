@@ -57,9 +57,8 @@ export class Service {
       return await this.account.get();
     } catch (error) {
       console.log("Appwrite service :: getCurrentUser :: error ", error);
-      return null;
+      throw error;
     }
-
   }
 
   async logout() {
@@ -79,7 +78,7 @@ export class Service {
         // use createOAuth2Session here
         provider,
         // success: `${baseUrl}/`,
-        success: `${baseUrl}/auth/callback`,
+        success: `${baseUrl}/`,
         failure: `${baseUrl}/signup`,
       });
     } catch (error) {
@@ -87,33 +86,6 @@ export class Service {
       throw error;
     }
   }
-
-  async handleOAuth2Callback() {
-  try {
-    // Session is already created by Appwrite
-    const user = await this.account.get();
-
-    // Ensure profile exists
-    try {
-      await profileService.getProfile(user.$id);
-    } catch {
-      // Profile doesn't exist → create one
-      await profileService.createProfile({
-        userId: user.$id,
-        name: user.name,
-        age: null,
-        bio: "",
-        avatar: null,
-      });
-    }
-
-    return user;
-  } catch (error) {
-    console.log("Appwrite service :: handleOAuth2Callback :: error", error);
-    throw error;
-  }
-}
-
 
   async deleteAccount() {
     try {

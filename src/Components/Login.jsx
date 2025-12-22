@@ -186,6 +186,7 @@ function Login({ onToggle = () => {}, isDarkMode = true }) {
               alt="Quibly"
               className="block dark:hidden h-5 w-5 object-contain object-center"
             />
+            <span>Continue with Github</span>
           </Button>
           {/* Add more OAuth providers if needed */}
         </div>

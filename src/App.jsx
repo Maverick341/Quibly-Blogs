@@ -9,7 +9,6 @@ import AddPost from "./Pages/AddPost";
 import AllPosts from "./Pages/AllPosts";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
-import AuthCallback from "./Pages/AuthCallback";
 import UserPosts from "./Pages/UserPosts";
 
 const router = createBrowserRouter([

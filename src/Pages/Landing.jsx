@@ -37,9 +37,9 @@ function Home() {
     <div className="min-h-screen bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3] font-sans">
       <Container>
         <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-3 gap-16 items-center">
+          <div className="grid lg:grid-cols-3 gap-16 items-start">
             {/* Left Column - Content */}
-            <div className="flex items-center min-h-[500px] ">
+            <div className="flex items-center min-h-[500px] lg:sticky lg:top-20">
               <div className="space-y-6 max-w-prose md:max-w-lg">
                 {/* Hero heading */}
                 <div>

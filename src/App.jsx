@@ -81,10 +81,6 @@ const router = createBrowserRouter([
         path: "post/:slug",
         element: <Post />,
       },
-      {
-        path: "auth/callback",
-        element: <AuthCallback />,
-      },
     ],
   },
 ]);

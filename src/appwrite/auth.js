@@ -72,14 +72,15 @@ export class Service {
 
   async OAuth2SignUp({ provider }) {
     try {
-      const baseUrl = window.location.origin;
+      const successUrl = window.location.origin + '/';
+      const failureUrl = window.location.origin + '/signup';
 
       return this.account.createOAuth2Session({
         // use createOAuth2Session here
         provider,
         // success: `${baseUrl}/`,
-        success: `${baseUrl}/`,
-        failure: `${baseUrl}/signup`,
+        success: successUrl,
+        failure: failureUrl,
       });
     } catch (error) {
       console.log("Appwrite service :: OAuth2SignUp :: error", error);

@@ -1,13 +1,9 @@
-import React, { useRef, useState } from "react";
-import authService from "@/appwrite/auth";
-import profileService from "@/appwrite/profile";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { login as authLogin } from "@/store/authSlice";
-import { updateProfile } from "@/store/authSlice";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button, Input } from ".";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { useOAuth } from "@/hooks/useOAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { OAuthProvider } from "appwrite";
 import GithubLogo from "@/assets/github-mark-white.svg";
 import GithubLogoDark from "@/assets/github-mark.svg";
@@ -15,10 +11,9 @@ import { Eye, EyeClosed } from "lucide-react";
 
 function Signup({ onToggle = () => {}, isDarkMode = true }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const location = useLocation();
 
   const isAuthPage =
@@ -37,43 +32,35 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
     },
   });
 
-  const { handleOAuthSignup, authError, setAuthError } = useOAuth();
+  const { signupWithEmailPassword, handleOAuthSignup, authError } = useAuth();
 
   const mode = useSelector((state) => state.theme.mode);
   isDarkMode = mode === "dark";
 
+  const handleGitHubSignup = async () => {
+    setIsGitHubLoading(true);
+    try {
+      await handleOAuthSignup({
+        provider: OAuthProvider.Github,
+      });
+    } catch (error) {
+      console.error("GitHub OAuth signup failed:", error);
+      setIsGitHubLoading(false);
+    } finally {
+      setIsGitHubLoading(false);
+    }
+  };
+
   const create = async (data) => {
-    setAuthError("");
-    setIsSigningUp(true);
+    setIsEmailLoading(true);
 
     try {
-      const userAccount = await authService.createAccount(data);
-
-      if (userAccount) {
-        const userData = await authService.getCurrentUser();
-
-        if (userData) {
-          dispatch(authLogin({ userData }));
-
-          // Profile is already created, just dispatch the data we have
-          dispatch(
-            updateProfile({
-              profile: {
-                name: data.name,
-                age: data.age ? Number(data.age) : null,
-                bio: data.bio || "",
-                avatar: null,
-              },
-            })
-          );
-
-          navigate("/");
-        }
-      }
+      await signupWithEmailPassword(data);
     } catch (error) {
-      setAuthError(error.message);
+      console.error("Email/password signup failed:", error);
+      setIsEmailLoading(false);
     } finally {
-      setIsSigningUp(false);
+      setIsEmailLoading(false);
     }
   };
 
@@ -205,10 +192,10 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
           {/* Submit button */}
           <Button
             type="submit"
-            disabled={isSigningUp}
+            disabled={isEmailLoading || isGitHubLoading}
             className="px-4 py-2 text-sm bg-[#a8956b] hover:bg-[#8c7a57] text-[#2a2d31] font-sans font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-[#a8956b] focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer"
           >
-            {isSigningUp ? (
+            {isEmailLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <span
                   className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
@@ -236,23 +223,32 @@ function Signup({ onToggle = () => {}, isDarkMode = true }) {
         {/* OAuth buttons*/}
         <div className="mt-10">
           <Button
-            onClick={() =>
-              handleOAuthSignup({
-                provider: OAuthProvider.Github,
-              })
-            }
+            onClick={handleGitHubSignup}
+            disabled={isGitHubLoading || isEmailLoading}
             className="px-4 py-2 text-sm bg-[#f0eeea] hover:bg-[#e7e4de] text-[#1f2226] dark:bg-white/5 dark:hover:bg-white/10 dark:text-[#c5c3bf] font-sans font-semibold rounded-md transition-colors shadow-[rgba(99,99,99,0.2)_0px_2px_8px_0px] border border-[#d5d2cc] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#c5c3bf]/40 dark:focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-[#f5f4f0] dark:focus:ring-offset-[#2a2d31] cursor-pointer flex items-center justify-center gap-2"
           >
-            <img
-              src={GithubLogo}
-              alt="Quibly"
-              className="hidden dark:block h-5 w-5 object-contain object-center"
-            />
-            <img
-              src={GithubLogoDark}
-              alt="Quibly"
-              className="block dark:hidden h-5 w-5 object-contain object-center"
-            />
+            {isGitHubLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span
+                  className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+              </span>
+            ) : (
+              <>
+                <img
+                  src={GithubLogo}
+                  alt="Quibly"
+                  className="hidden dark:block h-5 w-5 object-contain object-center"
+                />
+                <img
+                  src={GithubLogoDark}
+                  alt="Quibly"
+                  className="block dark:hidden h-5 w-5 object-contain object-center"
+                />
+              </>
+            )}
+
             <span>Continue with Github</span>
           </Button>
           {/* Add more OAuth providers if needed */}

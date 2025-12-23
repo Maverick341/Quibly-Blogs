@@ -1,53 +1,45 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import authService from "./appwrite/auth";
-import { login, logout, updateProfile } from "./store/authSlice";
+import { useEffect } from "react";
 import { Header, Footer } from "./Components";
 import "./App.css";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
-import profileService from "./appwrite/profile";
+import { useAuth } from "./hooks/useAuth";
+
+// import { useDispatch } from "react-redux";
+// import authService from "./appwrite/auth";
+// import { login, logout, updateProfile } from "./store/authSlice";
+// import profileService from "./appwrite/profile";
 
 function Layout() {
-  const [loading, setLoading] = useState(true);
+  const {status: authStatus, loading, setLoading } = useAuth();
   const location = useLocation();
-  const dispatch = useDispatch();
-
   const navigate = useNavigate();
-
-  const authStatus = useSelector((state) => state.auth.status);
+  
+  // const dispatch = useDispatch();
 
   const isLandingPage = location.pathname === "/";
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/signup";
 
-  useEffect(() => {
-    authService
-      .getCurrentUser()
-      .then((userData) => {
-        if (userData) {
-          dispatch(login({ userData }));
+  // useEffect(() => {
+  //   authService
+  //     .getCurrentUser()
+  //     .then((userData) => {
+  //       if (userData) {
+  //         dispatch(login({ userData }));
 
-          profileService.getProfile(userData.$id).then((profile) => {
-            if (profile) {
-              dispatch(updateProfile({ profile }));
-            }
-          }).catch(async () => {
-            await profileService.createProfile({
-              userId: userData.$id,
-              name: userData.name,
-              age: null,
-              bio: "",
-              avatar: null,
-            });
-          });
-        } else {
-          dispatch(logout());
-        }
-      }).catch(() => { console.log("This is error");
-       }
-      ).finally(() => setLoading(false));
-  }, []);
+  //         profileService.getProfile(userData.$id).then((profile) => {
+  //           if (profile) {
+  //             dispatch(updateProfile({ profile }));
+  //           }
+  //         })
+  //       } else {
+  //         dispatch(logout());
+  //       }
+  //     }).catch(() => { console.log("This is error");
+  //      }
+  //     ).finally(() => setLoading(false));
+  // }, []);
 
   useEffect(() => {
     if (!loading && authStatus && location.pathname === "/") {
@@ -55,7 +47,7 @@ function Layout() {
     }
   }, [loading, authStatus, location.pathname, navigate]);
 
-  if (loading && location.pathname !== "/") {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#f5f4f0] text-[#1f2226] dark:bg-[#2a2d31] dark:text-[#e8e6e3]">
         <Loader className="size-10 animate-spin text-[#a8956b] dark:text-[#a8956b]" />

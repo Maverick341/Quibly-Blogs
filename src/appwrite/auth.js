@@ -76,9 +76,7 @@ export class Service {
       const failureUrl = window.location.origin + '/signup';
 
       return this.account.createOAuth2Session({
-        // use createOAuth2Session here
         provider,
-        // success: `${baseUrl}/`,
         success: successUrl,
         failure: failureUrl,
       });

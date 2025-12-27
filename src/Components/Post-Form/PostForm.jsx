@@ -21,7 +21,7 @@ function PostForm({ post }) {
     handleSubmit,
     watch,
     setValue,
-    control,
+    // control,
     getValues,
     formState: { errors },
   } = useForm({
@@ -29,11 +29,20 @@ function PostForm({ post }) {
       title: post?.title || "",
       subtitle: post?.subtitle || "",
       slug: post?.$id || "",
-      content: post?.content || "",
+      content: post?.content ? safeParse(post.content, { blocks: [] }) : { blocks: [] },
       publishStatus: post?.publishStatus || "published",
       status: post?.status || "active",
     },
   });
+
+  function safeParse(value, fallback = null) {
+    try {
+      return typeof value === "string" ? JSON.parse(value) : value;
+    } catch (e) {
+      console.warn("Failed to parse JSON content, using fallback.", e);
+      return fallback;
+    }
+  }
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -125,7 +134,7 @@ function PostForm({ post }) {
     // 🔑 2. Inject editor data into payload
     const payload = {
       ...data,
-      content: editorContent,
+      content: JSON.stringify(editorContent),
     };
 
     if (post) {

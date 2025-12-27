@@ -9,6 +9,8 @@ import Quote from "@editorjs/quote";
 import CodeTool from "@editorjs/code";
 import SimpleImage from "@editorjs/simple-image";
 
+// EditorJS is not React StrictMode safe.
+// isInitialized prevents double initialization during dev-only double mount.
 const Editor = forwardRef(({ defaultValue }, ref) => {
   const holderRef = useRef(null);
   const editorInstanceRef = useRef(null);

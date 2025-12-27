@@ -109,16 +109,27 @@ export default function Post() {
 
   const authorName = post?.authorName || "Anonymous";
 
+  function renderTextWithBreaks(text) {
+    if (text == null) return null;
+    const parts = String(text).split(/<br\s*\/?>/gi);
+    return parts.map((part, idx) => (
+      React.createElement(React.Fragment, { key: idx },
+        part,
+        idx !== parts.length - 1 ? React.createElement('br') : null
+      )
+    ));
+  }
+
   function renderBlock(block, i) {
     switch (block.type) {
       case "paragraph":
-        return <p key={i}>{block.data.text}</p>;
+        return <p key={i}>{renderTextWithBreaks(block.data.text)}</p>;
 
       case "header":
         return React.createElement(
           `h${block.data.level}`,
           { key: i },
-          block.data.text
+          renderTextWithBreaks(block.data.text)
         );
 
       case "list":
@@ -149,8 +160,21 @@ export default function Post() {
           />
         );
 
+      case "br":
+        return <br key={i} />;
+
       default:
         return null;
+    }
+  }
+
+  function safeParse(value, fallback = { blocks: [] }) {
+    try {
+      if (typeof value === "string") return JSON.parse(value);
+      return value || fallback;
+    } catch (e) {
+      console.warn("Failed to parse post.content, using fallback.", e);
+      return fallback;
     }
   }
 
@@ -237,7 +261,7 @@ export default function Post() {
                         prose-strong:text-[#1a1a1a] dark:prose-strong:text-[#f5f3f0] prose-strong:font-semibold
                         prose-code:text-[#a8956b] prose-code:bg-[#e8e6e3] dark:prose-code:bg-[#3a3d41] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs sm:prose-code:text-sm"
             >
-              {post.content?.blocks?.map(renderBlock)}
+              {safeParse(post.content, { blocks: [] }).blocks.map(renderBlock)}
             </div>
           </div>
 
@@ -297,35 +321,37 @@ export default function Post() {
                           </button>
                         </Link>
                         <div className="h-px bg-[#e8e5df] dark:bg-[#414549] mx-2 my-1" />
-                        <button
-                          onClick={() => {
-                            moveToTrash();
-                            setShowMenu(false);
-                          }}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 sm:py-2 text-sm sm:text-base hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium last:rounded-b-xl ${
-                            post.status === "active"
-                              ? "text-[#c9302c] dark:text-[#ff6b6b]"
-                              : "text-[#5cb85c] dark:text-[#51cf66]"
-                          }`}
-                        >
-                          {post.status === "active" ? (
-                            <>
-                              {/* <Trash2
-                                className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
-                                strokeWidth={2}
-                              /> */}
-                              <span className="text-left">Move to Trash</span>
-                            </>
-                          ) : (
-                            <>
-                              {/* <RotateCcw
-                                className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
-                                strokeWidth={2}
-                              /> */}
-                              <span className="text-left">Restore</span>
-                            </>
-                          )}
-                        </button>
+                        <Link to="/all-posts">
+                          <button
+                            onClick={() => {
+                              moveToTrash();
+                              setShowMenu(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 sm:py-2 text-sm sm:text-base hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium last:rounded-b-xl ${
+                              post.status === "active"
+                                ? "text-[#c9302c] dark:text-[#ff6b6b]"
+                                : "text-[#5cb85c] dark:text-[#51cf66]"
+                            }`}
+                          >
+                            {post.status === "active" ? (
+                              <>
+                                {/* <Trash2
+                                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
+                                  strokeWidth={2}
+                                /> */}
+                                <span className="text-left">Move to Trash</span>
+                              </>
+                            ) : (
+                              <>
+                                {/* <RotateCcw
+                                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
+                                  strokeWidth={2}
+                                /> */}
+                                <span className="text-left">Restore</span>
+                              </>
+                            )}
+                          </button>
+                        </Link>
                       </div>
                     )}
                   </div>

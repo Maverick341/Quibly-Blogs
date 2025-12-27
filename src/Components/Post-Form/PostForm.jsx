@@ -41,11 +41,11 @@ function PostForm({ post }) {
 
   const userData = useSelector((state) => state.auth.userData);
 
-  const handlePreview = () => {
-    if (editorRef.current) {
-      editorRef.current.execCommand("mcePreview");
-    }
-  };
+  // const handlePreview = () => {
+  //   if (editorRef.current) {
+  //     editorRef.current.execCommand("mcePreview");
+  //   }
+  // };
 
   // Handle image preview for new posts
   const imageInput = watch("image");
@@ -103,26 +103,42 @@ function PostForm({ post }) {
   }, [errors, submitAttempt]);
 
   const submit = async (data) => {
-    // Show confirmation alert before publishing/updating
-    const action = post ? "update" : "publish";
     const message = post
       ? "Are you sure you want to update this post?"
       : "Are you sure you want to publish this post?";
 
-    if (!window.confirm(message)) {
+    if (!window.confirm(message)) return;
+
+    // 🔑 1. Read editor content explicitly
+    if (!editorRef.current) {
+      console.error("Editor not ready");
       return;
     }
 
+    const editorContent = await editorRef.current.save();
+
+    if (!editorContent || editorContent.blocks.length === 0) {
+      alert("Content cannot be empty");
+      return;
+    }
+
+    // 🔑 2. Inject editor data into payload
+    const payload = {
+      ...data,
+      content: editorContent,
+    };
+
     if (post) {
-      const file = data.image[0]
+      const file = data.image?.[0]
         ? await postService.uploadFile(data.image[0])
         : null;
 
       if (file) {
         await postService.deleteFile(post.featuredImage);
       }
+
       const dbPost = await postService.updatePost(post.$id, {
-        ...data,
+        ...payload,
         featuredImage: file ? file.$id : undefined,
       });
 
@@ -131,29 +147,28 @@ function PostForm({ post }) {
         navigate(`/post/${dbPost.$id}`);
       }
     } else {
-      const file = data.image[0]
+      const file = data.image?.[0]
         ? await postService.uploadFile(data.image[0])
         : null;
 
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
+      if (!file) return;
 
-        if (!userData) {
-          console.error("User data not available");
-          return;
-        }
+      payload.featuredImage = file.$id;
 
-        const newDbPost = await postService.createPost({
-          ...data,
-          userId: userData.$id,
-          authorName: userData.name,
-        });
+      if (!userData) {
+        console.error("User data not available");
+        return;
+      }
 
-        if (newDbPost) {
-          dispatch(addPost({ post: newDbPost }));
-          navigate(`/post/${newDbPost.$id}`);
-        }
+      const newDbPost = await postService.createPost({
+        ...payload,
+        userId: userData.$id,
+        authorName: userData.name,
+      });
+
+      if (newDbPost) {
+        dispatch(addPost({ post: newDbPost }));
+        navigate(`/post/${newDbPost.$id}`);
       }
     }
   };
@@ -203,7 +218,12 @@ function PostForm({ post }) {
             <Button
               type="button"
               onClick={() => {
-                if (post && window.confirm("This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.")) {
+                if (
+                  post &&
+                  window.confirm(
+                    "This page is asking you to confirm that you want to leave — information you’ve entered may not be saved."
+                  )
+                ) {
                   navigate(`/post/${post.$id}`);
                 }
                 navigate("/all-posts");
@@ -213,13 +233,13 @@ function PostForm({ post }) {
             >
               <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
             </Button>
-            <Button
+            {/* <Button
               type="button"
               className="inline-block px-2.5 sm:px-2 py-1.5 sm:py-2 text-xs sm:text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
               onClick={handlePreview}
             >
               Preview
-            </Button>
+            </Button> */}
             <Button
               type="submit"
               className="px-2.5 sm:px-2 py-1.5 sm:py-2 bg-[#a8956b] hover:bg-[#8f7d5a] text-white text-xs sm:text-sm font-medium rounded transition-colors cursor-pointer"
@@ -521,8 +541,8 @@ function PostForm({ post }) {
         <div className="mb-6 sm:mb-8">
           <RTE
             label=""
-            name="content"
-            control={control}
+            // name="content"
+            // control={control}
             editorRef={editorRef}
             defaultValue={getValues("content")}
           />

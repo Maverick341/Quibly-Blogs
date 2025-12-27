@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import parse from "html-react-parser";
 import {
   ChevronsUpDown,
   Share2,
-  Trash2,
-  RotateCcw,
+  // Trash2,
+  // RotateCcw,
   MoreVertical,
-  Pencil,
+  // Pencil,
   ArrowLeft,
 } from "lucide-react";
 import postService from "@/appwrite/post";
@@ -110,6 +109,51 @@ export default function Post() {
 
   const authorName = post?.authorName || "Anonymous";
 
+  function renderBlock(block, i) {
+    switch (block.type) {
+      case "paragraph":
+        return <p key={i}>{block.data.text}</p>;
+
+      case "header":
+        return React.createElement(
+          `h${block.data.level}`,
+          { key: i },
+          block.data.text
+        );
+
+      case "list":
+        return (
+          <ul key={i}>
+            {block.data.items.map((item, j) => (
+              <li key={j}>{item}</li>
+            ))}
+          </ul>
+        );
+
+      case "quote":
+        return <blockquote key={i}>{block.data.text}</blockquote>;
+
+      case "code":
+        return (
+          <pre key={i}>
+            <code>{block.data.code}</code>
+          </pre>
+        );
+
+      case "image":
+        return (
+          <img
+            key={i}
+            src={block.data.file.url}
+            alt={block.data.caption || ""}
+          />
+        );
+
+      default:
+        return null;
+    }
+  }
+
   return post ? (
     <article className="min-h-screen bg-[#f5f3f0] dark:bg-[#2a2d31] pb-8 sm:pb-12 px-4 sm:px-6">
       <div className="max-w-[720px] mx-auto">
@@ -193,7 +237,7 @@ export default function Post() {
                         prose-strong:text-[#1a1a1a] dark:prose-strong:text-[#f5f3f0] prose-strong:font-semibold
                         prose-code:text-[#a8956b] prose-code:bg-[#e8e6e3] dark:prose-code:bg-[#3a3d41] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs sm:prose-code:text-sm"
             >
-              {parse(post.content)}
+              {post.content?.blocks?.map(renderBlock)}
             </div>
           </div>
 

@@ -15,6 +15,7 @@ import PostForm from "./Post-Form/PostForm";
 import ErrorBoundary from "./ErrorBoundary/ErrorBoundary";
 import ErrorPage from "./ErrorBoundary/ErrorPage";
 import ThemeProvider from "./ThemeProvider";
+import Editor from "./Editor";
 
 export {
   Header,
@@ -34,4 +35,5 @@ export {
   ErrorBoundary,
   ErrorPage,
   ThemeProvider,
+  Editor,
 };

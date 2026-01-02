@@ -10,7 +10,6 @@ import PostCard from "./PostCard";
 import Input from "./Input";
 import Signup from "./Signup";
 import ProtectedRoute from "./ProtectedRoute";
-import RTE from "./RTE";
 import PostForm from "./Post-Form/PostForm";
 import ErrorBoundary from "./ErrorBoundary/ErrorBoundary";
 import ErrorPage from "./ErrorBoundary/ErrorPage";
@@ -29,7 +28,6 @@ export {
   Input,
   Signup as SignupComponent,
   ProtectedRoute,
-  RTE,
   PostForm,
   ErrorBoundary,
   ErrorPage,

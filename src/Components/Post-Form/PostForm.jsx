@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, RTE, Select } from "..";
+import { Button, Input, Select } from "..";
 import postService from "@/appwrite/post";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,14 +14,27 @@ function PostForm({ post }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [visibleErrors, setVisibleErrors] = useState({});
   const [submitAttempt, setSubmitAttempt] = useState(0);
-  const subtitleInputRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  function safeParse(value, fallback = null) {
+    try {
+      return typeof value === "string" ? JSON.parse(value) : value;
+    } catch (e) {
+      console.warn("Failed to parse JSON content, using fallback.", e);
+      return fallback;
+    }
+  }
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.userData);
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    control,
+    // control,
     getValues,
     formState: { errors },
   } = useForm({
@@ -29,23 +42,111 @@ function PostForm({ post }) {
       title: post?.title || "",
       subtitle: post?.subtitle || "",
       slug: post?.$id || "",
-      content: post?.content || "",
+      content: post?.content
+        ? safeParse(post.content, { blocks: [] })
+        : { blocks: [] },
       publishStatus: post?.publishStatus || "published",
       status: post?.status || "active",
     },
   });
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const subtitleInputRef = useRef(null);
+  const dropdownRef = useRef(null);
   const editorRef = useRef(null);
+  const holderRef = useRef(null);
+  const _titleRef = useRef(null);
 
-  const userData = useSelector((state) => state.auth.userData);
+  const initializeEditor = useCallback(async () => {
+    const EditorJS = (await import("@editorjs/editorjs")).default;
+    const Header = (await import("@editorjs/header")).default;
+    const Embed = (await import("@editorjs/embed")).default;
+    const Table = (await import("@editorjs/table")).default;
+    const EditorjsList = (await import("@editorjs/list")).default;
+    const CodeTool = (await import("@editorjs/code")).default;
+    const InlineCode = (await import("@editorjs/inline-code")).default;
+    const SimpleImage = (await import("@editorjs/simple-image")).default;
+    const Quote = (await import("@editorjs/quote")).default;
 
-  const handlePreview = () => {
-    if (editorRef.current) {
-      editorRef.current.execCommand("mcePreview");
+    if ( !editorRef.current) {
+      const editor = new EditorJS({
+        holder: holderRef.current,
+        onReady: () => {
+          editorRef.current = editor;
+        },
+        data: getValues("content") || { blocks: [] },
+        placeholder: "Start writing your article…",
+        inlineToolbar: true,
+        tools: {
+          header: {
+            class: Header,
+            inlineToolbar: true,
+            config: { levels: [2, 3, 4], defaultLevel: 2 },
+          },
+          list: {
+            class: EditorjsList,
+            inlineToolbar: true,
+          },
+          quote: {
+            class: Quote,
+            inlineToolbar: true,
+          },
+          inlineCode: {
+            class: InlineCode,
+            shortcut: "CMD+SHIFT+M",
+          },
+          table: {
+            class: Table,
+            inlineToolbar: true,
+            config: {
+              rows: 2,
+              cols: 3,
+              maxRows: 5,
+              maxCols: 5,
+            },
+          },
+          embed: Embed,
+          code: CodeTool,
+          image: SimpleImage,
+        },
+      });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMounted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      await initializeEditor();
+
+      setTimeout(() => {
+        _titleRef?.current?.focus();
+      }, 0);
+    };
+    if (isMounted) {
+      init();
+
+      return () => {
+        if (editorRef.current) {
+          editorRef.current.destroy();
+          editorRef.current = null;
+        }
+      };
+    }
+  }, [initializeEditor, isMounted]);
+
+  const { ref: titleRef, ...rest } = register("title", {
+    required: "Title is required",
+  });
+
+  // const handlePreview = () => {
+  //   if (editorRef.current) {
+  //     editorRef.current.execCommand("mcePreview");
+  //   }
+  // };
 
   // Handle image preview for new posts
   const imageInput = watch("image");
@@ -103,26 +204,42 @@ function PostForm({ post }) {
   }, [errors, submitAttempt]);
 
   const submit = async (data) => {
-    // Show confirmation alert before publishing/updating
-    const action = post ? "update" : "publish";
     const message = post
       ? "Are you sure you want to update this post?"
       : "Are you sure you want to publish this post?";
 
-    if (!window.confirm(message)) {
+    if (!window.confirm(message)) return;
+
+    // 🔑 1. Read editor content explicitly
+    if (!editorRef.current) {
+      console.error("Editor not ready");
       return;
     }
 
+    const editorContent = await editorRef.current.save();
+
+    if (!editorContent || editorContent.blocks.length === 0) {
+      alert("Content cannot be empty");
+      return;
+    }
+
+    // 🔑 2. Inject editor data into payload
+    const payload = {
+      ...data,
+      content: JSON.stringify(editorContent),
+    };
+
     if (post) {
-      const file = data.image[0]
+      const file = data.image?.[0]
         ? await postService.uploadFile(data.image[0])
         : null;
 
       if (file) {
         await postService.deleteFile(post.featuredImage);
       }
+
       const dbPost = await postService.updatePost(post.$id, {
-        ...data,
+        ...payload,
         featuredImage: file ? file.$id : undefined,
       });
 
@@ -131,29 +248,28 @@ function PostForm({ post }) {
         navigate(`/post/${dbPost.$id}`);
       }
     } else {
-      const file = data.image[0]
+      const file = data.image?.[0]
         ? await postService.uploadFile(data.image[0])
         : null;
 
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
+      if (!file) return;
 
-        if (!userData) {
-          console.error("User data not available");
-          return;
-        }
+      payload.featuredImage = file.$id;
 
-        const newDbPost = await postService.createPost({
-          ...data,
-          userId: userData.$id,
-          authorName: userData.name,
-        });
+      if (!userData) {
+        console.error("User data not available");
+        return;
+      }
 
-        if (newDbPost) {
-          dispatch(addPost({ post: newDbPost }));
-          navigate(`/post/${newDbPost.$id}`);
-        }
+      const newDbPost = await postService.createPost({
+        ...payload,
+        userId: userData.$id,
+        authorName: userData.name,
+      });
+
+      if (newDbPost) {
+        dispatch(addPost({ post: newDbPost }));
+        navigate(`/post/${newDbPost.$id}`);
       }
     }
   };
@@ -188,6 +304,10 @@ function PostForm({ post }) {
     (post && post.featuredImage && !removeExistingCover) || previewImage
   );
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <form
       onSubmit={(e) => {
@@ -203,7 +323,12 @@ function PostForm({ post }) {
             <Button
               type="button"
               onClick={() => {
-                if (post && window.confirm("This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.")) {
+                if (
+                  post &&
+                  window.confirm(
+                    "This page is asking you to confirm that you want to leave — information you’ve entered may not be saved."
+                  )
+                ) {
                   navigate(`/post/${post.$id}`);
                 }
                 navigate("/all-posts");
@@ -213,13 +338,13 @@ function PostForm({ post }) {
             >
               <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
             </Button>
-            <Button
+            {/* <Button
               type="button"
               className="inline-block px-2.5 sm:px-2 py-1.5 sm:py-2 text-xs sm:text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
               onClick={handlePreview}
             >
               Preview
-            </Button>
+            </Button> */}
             <Button
               type="submit"
               className="px-2.5 sm:px-2 py-1.5 sm:py-2 bg-[#a8956b] hover:bg-[#8f7d5a] text-white text-xs sm:text-sm font-medium rounded transition-colors cursor-pointer"
@@ -476,10 +601,14 @@ function PostForm({ post }) {
         {/* Title Input */}
         <div className="mb-4">
           <input
+            ref={(e) => {
+              titleRef(e);
+              _titleRef.current = e;
+            }}
+            {...rest}
             type="text"
             placeholder="Article Title..."
             className="w-full text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] wrap-break-word"
-            {...register("title", { required: "Title is required" })}
           />
           <div className="h-4 mt-1">
             {errors.title && visibleErrors.title && (
@@ -519,13 +648,20 @@ function PostForm({ post }) {
 
         {/* Content Editor */}
         <div className="mb-6 sm:mb-8">
-          <RTE
+          <div className="w-full">
+            <div
+              ref={holderRef}
+              className="min-h-[500px] rounded-sm px-2 py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
+            />
+          </div>
+
+          {/* <RTE
             label=""
-            name="content"
-            control={control}
+            // name="content"
+            // control={control}
             editorRef={editorRef}
             defaultValue={getValues("content")}
-          />
+          /> */}
           <div className="h-4 mt-1 sm:mt-2">
             {errors.content && visibleErrors.content && (
               <p className="text-[10px] text-red-500 dark:text-red-400">

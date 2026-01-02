@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, RTE, Select } from "..";
+import { Button, Input, Select } from "..";
 import postService from "@/appwrite/post";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,8 +14,21 @@ function PostForm({ post }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [visibleErrors, setVisibleErrors] = useState({});
   const [submitAttempt, setSubmitAttempt] = useState(0);
-  const subtitleInputRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  function safeParse(value, fallback = null) {
+    try {
+      return typeof value === "string" ? JSON.parse(value) : value;
+    } catch (e) {
+      console.warn("Failed to parse JSON content, using fallback.", e);
+      return fallback;
+    }
+  }
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.userData);
+
   const {
     register,
     handleSubmit,
@@ -29,26 +42,105 @@ function PostForm({ post }) {
       title: post?.title || "",
       subtitle: post?.subtitle || "",
       slug: post?.$id || "",
-      content: post?.content ? safeParse(post.content, { blocks: [] }) : { blocks: [] },
+      content: post?.content
+        ? safeParse(post.content, { blocks: [] })
+        : { blocks: [] },
       publishStatus: post?.publishStatus || "published",
       status: post?.status || "active",
     },
   });
 
-  function safeParse(value, fallback = null) {
-    try {
-      return typeof value === "string" ? JSON.parse(value) : value;
-    } catch (e) {
-      console.warn("Failed to parse JSON content, using fallback.", e);
-      return fallback;
-    }
-  }
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const subtitleInputRef = useRef(null);
+  const dropdownRef = useRef(null);
   const editorRef = useRef(null);
+  const holderRef = useRef(null);
+  const _titleRef = useRef(null);
 
-  const userData = useSelector((state) => state.auth.userData);
+  const initializeEditor = useCallback(async () => {
+    const EditorJS = (await import("@editorjs/editorjs")).default;
+    const Header = (await import("@editorjs/header")).default;
+    const Embed = (await import("@editorjs/embed")).default;
+    const Table = (await import("@editorjs/table")).default;
+    const EditorjsList = (await import("@editorjs/list")).default;
+    const CodeTool = (await import("@editorjs/code")).default;
+    const InlineCode = (await import("@editorjs/inline-code")).default;
+    const SimpleImage = (await import("@editorjs/simple-image")).default;
+    const Quote = (await import("@editorjs/quote")).default;
+
+    if ( !editorRef.current) {
+      const editor = new EditorJS({
+        holder: holderRef.current,
+        onReady: () => {
+          editorRef.current = editor;
+        },
+        data: getValues("content") || { blocks: [] },
+        placeholder: "Start writing your article…",
+        inlineToolbar: true,
+        tools: {
+          header: {
+            class: Header,
+            inlineToolbar: true,
+            config: { levels: [2, 3, 4], defaultLevel: 2 },
+          },
+          list: {
+            class: EditorjsList,
+            inlineToolbar: true,
+          },
+          quote: {
+            class: Quote,
+            inlineToolbar: true,
+          },
+          inlineCode: {
+            class: InlineCode,
+            shortcut: "CMD+SHIFT+M",
+          },
+          table: {
+            class: Table,
+            inlineToolbar: true,
+            config: {
+              rows: 2,
+              cols: 3,
+              maxRows: 5,
+              maxCols: 5,
+            },
+          },
+          embed: Embed,
+          code: CodeTool,
+          image: SimpleImage,
+        },
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMounted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      await initializeEditor();
+
+      setTimeout(() => {
+        _titleRef?.current?.focus();
+      }, 0);
+    };
+    if (isMounted) {
+      init();
+
+      return () => {
+        if (editorRef.current) {
+          editorRef.current.destroy();
+          editorRef.current = null;
+        }
+      };
+    }
+  }, [initializeEditor, isMounted]);
+
+  const { ref: titleRef, ...rest } = register("title", {
+    required: "Title is required",
+  });
 
   // const handlePreview = () => {
   //   if (editorRef.current) {
@@ -211,6 +303,10 @@ function PostForm({ post }) {
   const hasCover = Boolean(
     (post && post.featuredImage && !removeExistingCover) || previewImage
   );
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <form
@@ -505,10 +601,14 @@ function PostForm({ post }) {
         {/* Title Input */}
         <div className="mb-4">
           <input
+            ref={(e) => {
+              titleRef(e);
+              _titleRef.current = e;
+            }}
+            {...rest}
             type="text"
             placeholder="Article Title..."
             className="w-full text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] wrap-break-word"
-            {...register("title", { required: "Title is required" })}
           />
           <div className="h-4 mt-1">
             {errors.title && visibleErrors.title && (
@@ -548,13 +648,20 @@ function PostForm({ post }) {
 
         {/* Content Editor */}
         <div className="mb-6 sm:mb-8">
-          <RTE
+          <div className="w-full">
+            <div
+              ref={holderRef}
+              className="min-h-[500px] rounded-sm px-2 py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
+            />
+          </div>
+
+          {/* <RTE
             label=""
             // name="content"
             // control={control}
             editorRef={editorRef}
             defaultValue={getValues("content")}
-          />
+          /> */}
           <div className="h-4 mt-1 sm:mt-2">
             {errors.content && visibleErrors.content && (
               <p className="text-[10px] text-red-500 dark:text-red-400">

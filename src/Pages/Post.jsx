@@ -111,13 +111,39 @@ export default function Post() {
 
   function renderTextWithBreaks(text) {
     if (text == null) return null;
+    
+    // First split by <br> tags
     const parts = String(text).split(/<br\s*\/?>/gi);
-    return parts.map((part, idx) => (
-      React.createElement(React.Fragment, { key: idx },
-        part,
-        idx !== parts.length - 1 ? React.createElement('br') : null
-      )
-    ));
+    
+    return parts.map((part, idx) => {
+      // Then process each part for inline code tags
+      const codeParts = part.split(/(<code[^>]*>.*?<\/code>)/gi);
+      
+      const processed = codeParts.map((segment, segIdx) => {
+        if (/<code[^>]*>/.test(segment)) {
+          // Extract code content from the tag
+          const codeMatch = segment.match(/<code[^>]*>(.*?)<\/code>/i);
+          if (codeMatch) {
+            return (
+              <code
+                key={`code-${idx}-${segIdx}`}
+                className="bg-[#e8e6e3] dark:bg-[#3a3d41] px-1.5 py-0.5 rounded text-[#a8956b] text-xs sm:text-sm font-mono"
+              >
+                {codeMatch[1]}
+              </code>
+            );
+          }
+        }
+        return segment;
+      });
+      
+      return (
+        <React.Fragment key={idx}>
+          {processed}
+          {idx !== parts.length - 1 ? <br /> : null}
+        </React.Fragment>
+      );
+    });
   }
 
   function renderBlock(block, i) {
@@ -130,6 +156,45 @@ export default function Post() {
           `h${block.data.level}`,
           { key: i },
           renderTextWithBreaks(block.data.text)
+        );
+
+      case "embed":
+        return (
+          <figure key={i} className="my-6 sm:my-8">
+            <div
+              className="
+          relative w-full overflow-hidden rounded-lg
+          bg-black/5
+          pt-[56.25%]
+          max-w-full
+        "
+            >
+              <iframe
+                src={block.data.embed}
+                className="
+            absolute inset-0
+            h-full w-full
+            border-0
+          "
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+
+            {block.data.caption && (
+              <figcaption
+                className="
+            mt-2 px-2
+            text-center text-xs sm:text-sm
+            text-muted-foreground
+          "
+              >
+                {block.data.caption}
+              </figcaption>
+            )}
+          </figure>
         );
 
       case "list":
@@ -149,6 +214,26 @@ export default function Post() {
           <pre key={i}>
             <code>{block.data.code}</code>
           </pre>
+        );
+
+      case "table":
+        return (
+          <table key={i} className="w-full border-collapse border border-[#d0cdc8] dark:border-[#3a3d41]">
+            <tbody>
+              {block.data.content.map((row, rowIdx) => (
+                <tr key={rowIdx}>
+                  {row.map((cell, cellIdx) => (
+                    <td
+                      key={cellIdx}
+                      className="border border-[#d0cdc8] dark:border-[#3a3d41] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm"
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         );
 
       case "image":

@@ -8,6 +8,9 @@ import EditorjsList from "@editorjs/list";
 import Quote from "@editorjs/quote";
 import CodeTool from "@editorjs/code";
 import SimpleImage from "@editorjs/simple-image";
+import InlineCode from "@editorjs/inline-code";
+import Embed from "@editorjs/embed";
+import Table from "@editorjs/table";
 
 // EditorJS is not React StrictMode safe.
 // isInitialized prevents double initialization during dev-only double mount.
@@ -49,6 +52,21 @@ const Editor = forwardRef(({ defaultValue }, ref) => {
           class: Quote,
           inlineToolbar: true,
         },
+        inlineCode: {
+          class: InlineCode,
+          shortcut: "CMD+SHIFT+M",
+        },
+        table: {
+          class: Table,
+          inlineToolbar: true,
+          config: {
+            rows: 2,
+            cols: 3,
+            maxRows: 5,
+            maxCols: 5,
+          },
+        },
+        embed: Embed,
         code: CodeTool,
         image: SimpleImage,
       },
@@ -68,7 +86,7 @@ const Editor = forwardRef(({ defaultValue }, ref) => {
   return (
     <div
       ref={holderRef}
-      className="min-h-[300px] rounded-sm px-2 py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52] 
+      className="min-h-[300px] rounded-sm px-2 py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
     />
   );
 });

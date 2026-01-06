@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import postService from "@/appwrite/post";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@/Components";
+import { Button, EditorOutput } from "@/Components";
 import { removePost, setCurrentPost, editPost } from "@/store/postSlice";
 
 export default function Post() {
@@ -109,149 +109,149 @@ export default function Post() {
 
   const authorName = post?.authorName || "Anonymous";
 
-  function renderTextWithBreaks(text) {
-    if (text == null) return null;
+  // function renderTextWithBreaks(text) {
+  //   if (text == null) return null;
     
-    // First split by <br> tags
-    const parts = String(text).split(/<br\s*\/?>/gi);
+  //   // First split by <br> tags
+  //   const parts = String(text).split(/<br\s*\/?>/gi);
     
-    return parts.map((part, idx) => {
-      // Then process each part for inline code tags
-      const codeParts = part.split(/(<code[^>]*>.*?<\/code>)/gi);
+  //   return parts.map((part, idx) => {
+  //     // Then process each part for inline code tags
+  //     const codeParts = part.split(/(<code[^>]*>.*?<\/code>)/gi);
       
-      const processed = codeParts.map((segment, segIdx) => {
-        if (/<code[^>]*>/.test(segment)) {
-          // Extract code content from the tag
-          const codeMatch = segment.match(/<code[^>]*>(.*?)<\/code>/i);
-          if (codeMatch) {
-            return (
-              <code
-                key={`code-${idx}-${segIdx}`}
-                className="bg-[#e8e6e3] dark:bg-[#3a3d41] px-1.5 py-0.5 rounded text-[#a8956b] text-xs sm:text-sm font-mono"
-              >
-                {codeMatch[1]}
-              </code>
-            );
-          }
-        }
-        return segment;
-      });
+  //     const processed = codeParts.map((segment, segIdx) => {
+  //       if (/<code[^>]*>/.test(segment)) {
+  //         // Extract code content from the tag
+  //         const codeMatch = segment.match(/<code[^>]*>(.*?)<\/code>/i);
+  //         if (codeMatch) {
+  //           return (
+  //             <code
+  //               key={`code-${idx}-${segIdx}`}
+  //               className="bg-[#e8e6e3] dark:bg-[#3a3d41] px-1.5 py-0.5 rounded text-[#a8956b] text-xs sm:text-sm font-mono"
+  //             >
+  //               {codeMatch[1]}
+  //             </code>
+  //           );
+  //         }
+  //       }
+  //       return segment;
+  //     });
       
-      return (
-        <React.Fragment key={idx}>
-          {processed}
-          {idx !== parts.length - 1 ? <br /> : null}
-        </React.Fragment>
-      );
-    });
-  }
+  //     return (
+  //       <React.Fragment key={idx}>
+  //         {processed}
+  //         {idx !== parts.length - 1 ? <br /> : null}
+  //       </React.Fragment>
+  //     );
+  //   });
+  // }
 
-  function renderBlock(block, i) {
-    switch (block.type) {
-      case "paragraph":
-        return <p key={i}>{renderTextWithBreaks(block.data.text)}</p>;
+  // function renderBlock(block, i) {
+  //   switch (block.type) {
+  //     case "paragraph":
+  //       return <p key={i}>{renderTextWithBreaks(block.data.text)}</p>;
 
-      case "header":
-        return React.createElement(
-          `h${block.data.level}`,
-          { key: i },
-          renderTextWithBreaks(block.data.text)
-        );
+  //     case "header":
+  //       return React.createElement(
+  //         `h${block.data.level}`,
+  //         { key: i },
+  //         renderTextWithBreaks(block.data.text)
+  //       );
 
-      case "embed":
-        return (
-          <figure key={i} className="my-6 sm:my-8">
-            <div
-              className="
-          relative w-full overflow-hidden rounded-lg
-          bg-black/5
-          pt-[56.25%]
-          max-w-full
-        "
-            >
-              <iframe
-                src={block.data.embed}
-                className="
-            absolute inset-0
-            h-full w-full
-            border-0
-          "
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+  //     case "embed":
+  //       return (
+  //         <figure key={i} className="my-6 sm:my-8">
+  //           <div
+  //             className="
+  //         relative w-full overflow-hidden rounded-lg
+  //         bg-black/5
+  //         pt-[56.25%]
+  //         max-w-full
+  //       "
+  //           >
+  //             <iframe
+  //               src={block.data.embed}
+  //               className="
+  //           absolute inset-0
+  //           h-full w-full
+  //           border-0
+  //         "
+  //               allow="autoplay; fullscreen; picture-in-picture"
+  //               allowFullScreen
+  //               loading="lazy"
+  //               referrerPolicy="no-referrer"
+  //             />
+  //           </div>
 
-            {block.data.caption && (
-              <figcaption
-                className="
-            mt-2 px-2
-            text-center text-xs sm:text-sm
-            text-muted-foreground
-          "
-              >
-                {block.data.caption}
-              </figcaption>
-            )}
-          </figure>
-        );
+  //           {block.data.caption && (
+  //             <figcaption
+  //               className="
+  //           mt-2 px-2
+  //           text-center text-xs sm:text-sm
+  //           text-muted-foreground
+  //         "
+  //             >
+  //               {block.data.caption}
+  //             </figcaption>
+  //           )}
+  //         </figure>
+  //       );
 
-      case "list":
-        return (
-          <ul key={i}>
-            {block.data.items.map((item, j) => (
-              <li key={j}>{item}</li>
-            ))}
-          </ul>
-        );
+  //     case "list":
+  //       return (
+  //         <ul key={i}>
+  //           {block.data.items.map((item, j) => (
+  //             <li key={j}>{item}</li>
+  //           ))}
+  //         </ul>
+  //       );
 
-      case "quote":
-        return <blockquote key={i}>{block.data.text}</blockquote>;
+  //     case "quote":
+  //       return <blockquote key={i}>{block.data.text}</blockquote>;
 
-      case "code":
-        return (
-          <pre key={i}>
-            <code>{block.data.code}</code>
-          </pre>
-        );
+  //     case "code":
+  //       return (
+  //         <pre key={i}>
+  //           <code>{block.data.code}</code>
+  //         </pre>
+  //       );
 
-      case "table":
-        return (
-          <table key={i} className="w-full border-collapse border border-[#d0cdc8] dark:border-[#3a3d41]">
-            <tbody>
-              {block.data.content.map((row, rowIdx) => (
-                <tr key={rowIdx}>
-                  {row.map((cell, cellIdx) => (
-                    <td
-                      key={cellIdx}
-                      className="border border-[#d0cdc8] dark:border-[#3a3d41] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm"
-                    >
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
+  //     case "table":
+  //       return (
+  //         <table key={i} className="w-full border-collapse border border-[#d0cdc8] dark:border-[#3a3d41]">
+  //           <tbody>
+  //             {block.data.content.map((row, rowIdx) => (
+  //               <tr key={rowIdx}>
+  //                 {row.map((cell, cellIdx) => (
+  //                   <td
+  //                     key={cellIdx}
+  //                     className="border border-[#d0cdc8] dark:border-[#3a3d41] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm"
+  //                   >
+  //                     {cell}
+  //                   </td>
+  //                 ))}
+  //               </tr>
+  //             ))}
+  //           </tbody>
+  //         </table>
+  //       );
 
-      case "image":
-        return (
-          <img
-            key={i}
-            src={block.data.file.url}
-            alt={block.data.caption || ""}
-          />
-        );
+  //     case "image":
+  //       return (
+  //         <img
+  //           key={i}
+  //           src={block.data.file.url}
+  //           alt={block.data.caption || ""}
+  //         />
+  //       );
 
-      case "br":
-        return <br key={i} />;
+  //     case "br":
+  //       return <br key={i} />;
 
-      default:
-        return null;
-    }
-  }
+  //     default:
+  //       return null;
+  //   }
+  // }
 
   function safeParse(value, fallback = { blocks: [] }) {
     try {
@@ -346,7 +346,8 @@ export default function Post() {
                         prose-strong:text-[#1a1a1a] dark:prose-strong:text-[#f5f3f0] prose-strong:font-semibold
                         prose-code:text-[#a8956b] prose-code:bg-[#e8e6e3] dark:prose-code:bg-[#3a3d41] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs sm:prose-code:text-sm"
             >
-              {safeParse(post.content, { blocks: [] }).blocks.map(renderBlock)}
+              {/* {safeParse(post.content, { blocks: [] }).blocks.map(renderBlock)} */}
+              <EditorOutput content={safeParse(post.content, { blocks: [] })} />
             </div>
           </div>
 

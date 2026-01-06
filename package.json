@@ -7,9 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "copy-tinymce": "node ./scripts/copy-tinymce.js",
-    "postinstall": "node ./scripts/copy-tinymce.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@editorjs/code": "^2.9.4",
@@ -24,9 +22,8 @@
     "@editorjs/table": "^2.4.5",
     "@reduxjs/toolkit": "^2.11.0",
     "@tailwindcss/vite": "^4.1.17",
-    "@tinymce/tinymce-react": "^6.3.0",
     "appwrite": "^21.5.0",
-    "html-react-parser": "^5.2.10",
+    "editorjs-blocks-react-renderer": "^1.3.0",
     "lucide-react": "^0.561.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -34,8 +31,7 @@
     "react-hook-form": "^7.68.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.10.1",
-    "tailwindcss": "^4.1.17",
-    "tinymce": "^8.3.0"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

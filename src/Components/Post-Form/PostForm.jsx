@@ -58,16 +58,17 @@ function PostForm({ post }) {
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
+    const Paragraph = (await import("@editorjs/paragraph")).default;
     const Header = (await import("@editorjs/header")).default;
     const Embed = (await import("@editorjs/embed")).default;
     const Table = (await import("@editorjs/table")).default;
     const EditorjsList = (await import("@editorjs/list")).default;
-    const CodeTool = (await import("@editorjs/code")).default;
+    const CodeTool = (await import("@editorjs/code")).default;  // https://github.com/dev-juju/codebox used
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const SimpleImage = (await import("@editorjs/simple-image")).default;
     const Quote = (await import("@editorjs/quote")).default;
 
-    if ( !editorRef.current) {
+    if (!editorRef.current) {
       const editor = new EditorJS({
         holder: holderRef.current,
         onReady: () => {
@@ -77,6 +78,10 @@ function PostForm({ post }) {
         placeholder: "Start writing your article…",
         inlineToolbar: true,
         tools: {
+          paragraph: {
+            class: Paragraph,
+            inlineToolbar: true,
+          },
           header: {
             class: Header,
             inlineToolbar: true,
@@ -104,8 +109,16 @@ function PostForm({ post }) {
               maxCols: 5,
             },
           },
+          code: {
+            class: CodeTool,  // use https://github.com/calumk/editorjs-codecup later
+            // config: {
+            //   themeURL:
+            //     "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/dracula.min.css", // Optional
+            //   themeName: "atom-one-dark", // Optional
+            //   useDefaultTheme: "light", // Optional. This also determines the background color of the language select drop-down
+            // },
+          },
           embed: Embed,
-          code: CodeTool,
           image: SimpleImage,
         },
       });
@@ -229,6 +242,11 @@ function PostForm({ post }) {
       content: JSON.stringify(editorContent),
     };
 
+    if (payload.content.length > 50000) {
+      alert("Content is too long. Please limit to 50,000 characters.");
+      return;
+    }
+
     if (post) {
       const file = data.image?.[0]
         ? await postService.uploadFile(data.image[0])
@@ -261,6 +279,9 @@ function PostForm({ post }) {
         return;
       }
 
+      console.log(payload);
+      
+      
       const newDbPost = await postService.createPost({
         ...payload,
         userId: userData.$id,
@@ -651,7 +672,7 @@ function PostForm({ post }) {
           <div className="w-full">
             <div
               ref={holderRef}
-              className="min-h-[500px] rounded-sm px-2 py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
+              className="min-h-[500px] rounded-sm py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
             />
           </div>
 

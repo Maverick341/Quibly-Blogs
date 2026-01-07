@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost, editPost } from "@/store/postSlice";
 import { X, ChevronDown, Trash2, ArrowLeft } from "lucide-react";
+import { CodeTool } from "@/editorjs";
 
 function PostForm({ post }) {
   const [previewImage, setPreviewImage] = useState(null);
@@ -63,7 +64,7 @@ function PostForm({ post }) {
     const Embed = (await import("@editorjs/embed")).default;
     const Table = (await import("@editorjs/table")).default;
     const EditorjsList = (await import("@editorjs/list")).default;
-    const CodeTool = (await import("@editorjs/code")).default;  // https://github.com/dev-juju/codebox used
+    // const CodeTool = (await import("@editorjs/code")).default;  // https://github.com/dev-juju/codebox used
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const SimpleImage = (await import("@editorjs/simple-image")).default;
     const Quote = (await import("@editorjs/quote")).default;
@@ -109,15 +110,7 @@ function PostForm({ post }) {
               maxCols: 5,
             },
           },
-          code: {
-            class: CodeTool,  // use https://github.com/calumk/editorjs-codecup later
-            // config: {
-            //   themeURL:
-            //     "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/dracula.min.css", // Optional
-            //   themeName: "atom-one-dark", // Optional
-            //   useDefaultTheme: "light", // Optional. This also determines the background color of the language select drop-down
-            // },
-          },
+          code: CodeTool,
           embed: Embed,
           image: SimpleImage,
         },

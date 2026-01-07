@@ -1,0 +1,1 @@
+export { default as CodeTool } from './tools/code';

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Select } from "..";
+import { Button, Input, Select } from "../..";
 import postService from "@/appwrite/post";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,11 +51,45 @@ function PostForm({ post }) {
     },
   });
 
+  const watchedTitle = watch("title");
+  const watchedSubtitle = watch("subtitle");
+
   const subtitleInputRef = useRef(null);
   const dropdownRef = useRef(null);
   const editorRef = useRef(null);
   const holderRef = useRef(null);
   const _titleRef = useRef(null);
+
+  // Auto-expand textarea height
+  const autoExpandTextarea = useCallback((textarea) => {
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 400) + "px";
+    }
+  }, []);
+
+  const handlePreview = useCallback(async () => {
+    if (!editorRef.current) return;
+
+    const editorContent = await editorRef.current.save();
+
+    const payload = {
+      title: getValues("title"),
+      subtitle: getValues("subtitle"),
+      content: editorContent,
+      coverImage:
+        previewImage ||
+        (post && post.featuredImage && !removeExistingCover
+          ? postService.getFileView(post.featuredImage)
+          : null),
+    };
+
+    const previewPath = post
+      ? `/edit-post/${post.$id}/preview`
+      : "/add-post/preview";
+
+    navigate(previewPath, { state: payload });
+  }, [getValues, navigate, post, previewImage, removeExistingCover]);
 
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
@@ -156,6 +190,12 @@ function PostForm({ post }) {
 
   // Handle image preview for new posts
   const imageInput = watch("image");
+  const previewDisabled = !(
+    (watchedTitle && watchedTitle.trim()) ||
+    (watchedSubtitle && watchedSubtitle.trim()) ||
+    previewImage ||
+    (post && post.featuredImage && !removeExistingCover)
+  );
   useEffect(() => {
     if (imageInput && imageInput[0]) {
       const file = imageInput[0];
@@ -352,13 +392,18 @@ function PostForm({ post }) {
             >
               <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
             </Button>
-            {/* <Button
+            <Button
               type="button"
-              className="inline-block px-2.5 sm:px-2 py-1.5 sm:py-2 text-xs sm:text-sm text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] transition-colors cursor-pointer duration-150 ease-out rounded-md hover:bg-black/5 dark:hover:bg-white/5"
+              className={`inline-block px-2.5 sm:px-2 py-1.5 sm:py-2 text-xs sm:text-sm transition-colors duration-150 ease-out rounded-md ${
+                previewDisabled
+                  ? "text-[#9aa0a6] dark:text-[#666] bg-transparent cursor-not-allowed opacity-60"
+                  : "text-[#4f5358] hover:text-[#8c7a57] dark:text-[#c5c3bf] dark:hover:text-[#a8956b] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+              }`}
               onClick={handlePreview}
+              disabled={previewDisabled}
             >
               Preview
-            </Button> */}
+            </Button>
             <Button
               type="submit"
               className="px-2.5 sm:px-2 py-1.5 sm:py-2 bg-[#a8956b] hover:bg-[#8f7d5a] text-white text-xs sm:text-sm font-medium rounded transition-colors cursor-pointer"
@@ -519,14 +564,41 @@ function PostForm({ post }) {
           </div>
         </div>
         {/* Actions: Add Cover + Add Subtitle */}
-        <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-4 sm:mb-6 min-h-10">
-          {!hasCover && (
-            <div className="relative">
+        {(!hasCover || !showSubtitle) && (
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-4 sm:mb-6 min-h-10">
+            {!hasCover && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() =>
+                    document.getElementById("featured-image-input").click()
+                  }
+                  className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
+                >
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+                    <circle cx="8" cy="9" r="2" />
+                    <path d="M21 19l-6-6-4 4-2-2-5 4" />
+                  </svg>
+                  <span className="text-xs sm:text-sm">Add Cover</span>
+                </button>
+                {errors.image && visibleErrors.image && (
+                  <p className="text-[10px] text-red-500 dark:text-red-400 absolute left-0 top-full mt-1 whitespace-nowrap">
+                    {errors.image.message}
+                  </p>
+                )}
+              </div>
+            )}
+            {!showSubtitle && (
               <button
                 type="button"
-                onClick={() =>
-                  document.getElementById("featured-image-input").click()
-                }
+                onClick={() => setShowSubtitle(true)}
                 className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
               >
                 <svg
@@ -534,44 +606,19 @@ function PostForm({ post }) {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  strokeWidth={2}
                 >
-                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
-                  <circle cx="8" cy="9" r="2" />
-                  <path d="M21 19l-6-6-4 4-2-2-5 4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
-                <span className="text-xs sm:text-sm">Add Cover</span>
+                <span className="text-xs sm:text-sm">Add Subtitle</span>
               </button>
-              {errors.image && visibleErrors.image && (
-                <p className="text-[10px] text-red-500 dark:text-red-400 absolute left-0 top-full mt-1 whitespace-nowrap">
-                  {errors.image.message}
-                </p>
-              )}
-            </div>
-          )}
-          {!showSubtitle && (
-            <button
-              type="button"
-              onClick={() => setShowSubtitle(true)}
-              className="flex items-center gap-2 text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#8c7a57] dark:hover:text-[#a8956b] transition-colors cursor-pointer"
-            >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              <span className="text-xs sm:text-sm">Add Subtitle</span>
-            </button>
-          )}
-        </div>
+            )}
+          </div>
+        )}
         {/* Add Cover Section */}
         <div className="mb-6 sm:mb-8">
           {(post && post.featuredImage && !removeExistingCover) ||
@@ -614,15 +661,23 @@ function PostForm({ post }) {
 
         {/* Title Input */}
         <div className="mb-4">
-          <input
+          <textarea
             ref={(e) => {
               titleRef(e);
               _titleRef.current = e;
+              if (e) autoExpandTextarea(e);
             }}
             {...rest}
-            type="text"
             placeholder="Article Title..."
-            className="w-full text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] wrap-break-word"
+            className="w-full text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal text-[#1a1a1a] dark:text-[#f5f3f0] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] resize-none overflow-hidden"
+            rows="1"
+            onChange={(e) => {
+              autoExpandTextarea(e.target);
+              rest.onChange?.(e);
+            }}
+            onInput={(e) => {
+              autoExpandTextarea(e.target);
+            }}
           />
           <div className="h-4 mt-1">
             {errors.title && visibleErrors.title && (
@@ -636,12 +691,21 @@ function PostForm({ post }) {
         {/* Subtitle Input (optional) */}
         {showSubtitle && (
           <div className="mb-6 sm:mb-8 relative">
-            <input
-              ref={subtitleInputRef}
-              type="text"
+            <textarea
+              ref={(e) => {
+                subtitleInputRef.current = e;
+                if (e) autoExpandTextarea(e);
+              }}
               placeholder="Article Subtitle..."
-              className="w-full text-lg sm:text-xl md:text-2xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666]"
+              className="w-full text-lg sm:text-xl md:text-2xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] resize-none overflow-hidden"
+              rows="1"
               {...register("subtitle")}
+              onChange={(e) => {
+                autoExpandTextarea(e.target);
+              }}
+              onInput={(e) => {
+                autoExpandTextarea(e.target);
+              }}
             />
             <button
               type="button"

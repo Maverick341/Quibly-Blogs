@@ -10,6 +10,7 @@ import AllPosts from "./Pages/AllPosts";
 import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import UserPosts from "./Pages/UserPosts";
+import PostPreview from "./Pages/PostPreview";
 
 const router = createBrowserRouter([
   {
@@ -60,11 +61,27 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "add-post/preview",
+        element: (
+          <ProtectedRoute authentication>
+            <PostPreview />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "edit-post/:slug",
         element: (
           <ProtectedRoute authentication>
             {" "}
             <EditPost />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "edit-post/:slug/preview",
+        element: (
+          <ProtectedRoute authentication>
+            <PostPreview />
           </ProtectedRoute>
         ),
       },

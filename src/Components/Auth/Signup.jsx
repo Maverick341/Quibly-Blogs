@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button, Input } from ".";
+import { Button, Input } from "..";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";

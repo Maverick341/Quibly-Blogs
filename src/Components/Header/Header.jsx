@@ -1,16 +1,17 @@
 import React from "react";
 import { Container, Logo, LogoutBtn } from "..";
-import ThemeToggle from "@/Components/ToggleThemeButton";
-import { Link, useNavigate } from "react-router-dom";
+import ThemeToggle from "@/Components/Theme/ToggleThemeButton";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navItems = [
     // { name: "Home", slug: "/", active: true },
-    { name: "Home", slug: "/all-posts", active: authStatus },
+    { name: "Home", slug: "/all-posts", active: authStatus && location.pathname !== "/all-posts" },
     { name: "Login", slug: "/login", active: !authStatus },
     { name: "Signup", slug: "/signup", active: !authStatus },
     // { name: "Add Post", slug: "/add-post", active: authStatus },

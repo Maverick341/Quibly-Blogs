@@ -266,19 +266,9 @@ export default function Post() {
   return post ? (
     <article className="min-h-screen bg-[#f5f3f0] dark:bg-[#2a2d31] pb-8 sm:pb-12 px-4 sm:px-6">
       <div className="max-w-[720px] mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate("/all-posts")}
-          className="inline-flex items-center gap-2 my-4 sm:mb-6 px-2 sm:px-3 py-2 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:text-[#1f2226] dark:hover:text-[#e8e6e3] transition-colors cursor-pointer"
-          title="Go back"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {/* <span>Back</span> */}
-        </button>
-
         {/* Featured Image first */}
         <figure
-          className={`relative mb-6 sm:mb-10 rounded-lg sm:rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]`}
+          className={`relative mt-6 sm:mt-8 mb-6 sm:mb-10 rounded-lg sm:rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]`}
         >
           <img
             src={postService.getFileView(post.featuredImage)}

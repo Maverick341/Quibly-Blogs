@@ -1,5 +1,5 @@
 import Blocks from "editorjs-blocks-react-renderer";
-import { CustomCodeRenderer, CustomListRenderer } from ".";
+import { CustomCodeRenderer, CustomListRenderer } from "..";
 
 const renderers = {
   code: CustomCodeRenderer,

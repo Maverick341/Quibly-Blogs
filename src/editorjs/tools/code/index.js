@@ -54,7 +54,7 @@ export default class CodeTool {
     };
 
     this.languageList = [
-      // { name: "Select Language", code: "" },
+      { name: "Select Language", code: "" },
       { name: "HTML", code: "html" },
       { name: "CSS", code: "css" },
       { name: "JavaScript", code: "js" },
@@ -282,7 +282,7 @@ export default class CodeTool {
 
     this.data = {
       code: data.code || "",
-      languageCode: data.languageCode || "python", // change to empty string "" later
+      languageCode: data.languageCode || "", // change to empty string "" later
     };
 
     this.nodes.holder = this.drawView();
@@ -308,6 +308,9 @@ export default class CodeTool {
       let option = document.createElement("option");
       option.text = language.name;
       option.value = language.code;
+      if (language.name ==="Select Language") {
+        option.disabled = true;
+      }
       picker.appendChild(option);
     }
 
@@ -318,6 +321,7 @@ export default class CodeTool {
     textarea.contentEditable = true;
     textarea.spellcheck = false;
     textarea.classList.add(this.CSS.textarea, this.CSS.input);
+    textarea.addEventListener("paste", this._handleDomPaste.bind(this));
     actionsContainer.classList.add("ce-code__actions");
     copyButton.classList.add("ce-code__button");
     deleteButton.classList.add("ce-code__button");
@@ -405,11 +409,51 @@ export default class CodeTool {
    * @param {PasteEvent} event - event with pasted content
    */
   onPaste(event) {
-    const content = event.detail.data;
+    const content = event?.detail?.data;
+    const codeText = this._extractPastedText(content);
 
     this.data = {
-      code: content.textContent,
+      code: codeText,
+      languageCode: this.data.languageCode || "",
     };
+
+    if (this.nodes.textarea) {
+      this.nodes.textarea.textContent = codeText;
+    }
+
+    // Prevent default paste flow to avoid creating separate paragraph blocks
+    if (event?.preventDefault) event.preventDefault();
+    if (event?.stopPropagation) event.stopPropagation();
+    if (event?.stopImmediatePropagation) event.stopImmediatePropagation();
+  }
+
+  _extractPastedText(content) {
+    if (!content) return "";
+    if (typeof content === "string") return content;
+    if (content.textContent) return content.textContent;
+    if (content.innerText) return content.innerText;
+    if (content.innerHTML) return content.innerHTML.replace(/<[^>]*>/g, "");
+    return "";
+  }
+
+  _handleDomPaste(e) {
+    if (!e || !e.clipboardData) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+    const plain = e.clipboardData.getData("text/plain") || "";
+    const html = e.clipboardData.getData("text/html") || "";
+    const codeText = plain || html.replace(/<[^>]*>/g, "");
+
+    this.data = {
+      code: codeText,
+      languageCode: this.data.languageCode || "",
+    };
+
+    if (this.nodes.textarea) {
+      this.nodes.textarea.textContent = codeText;
+    }
   }
 
   /**
@@ -471,7 +515,7 @@ export default class CodeTool {
    */
   static get pasteConfig() {
     return {
-      tags: ["pre"],
+      tags: ["pre", "code"],
     };
   }
 

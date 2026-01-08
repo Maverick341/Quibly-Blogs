@@ -42,7 +42,7 @@ function PostForm({ post }) {
     defaultValues: {
       title: post?.title || "",
       subtitle: post?.subtitle || "",
-      slug: post?.$id || "",
+      slug: post?.slug || "",
       content: post?.content
         ? safeParse(post.content, { blocks: [] })
         : { blocks: [] },
@@ -83,6 +83,7 @@ function PostForm({ post }) {
     const editorContent = await editorRef.current.save();
 
     const payload = {
+      slug: getValues("slug"),
       title: getValues("title"),
       subtitle: getValues("subtitle"),
       content: editorContent,
@@ -94,7 +95,7 @@ function PostForm({ post }) {
     };
 
     const previewPath = post
-      ? `/edit-post/${post.$id}/preview`
+      ? `/edit-post/${post.slug}-${post.$id}/preview`
       : "/add-post/preview";
 
     navigate(previewPath, { state: payload });
@@ -305,7 +306,7 @@ function PostForm({ post }) {
 
       if (dbPost) {
         dispatch(editPost({ post: dbPost }));
-        navigate(`/post/${dbPost.$id}`);
+        navigate(`/post/${watch("slug")}-${dbPost.$id}`);
       }
     } else {
       const file = data.image?.[0]
@@ -331,7 +332,7 @@ function PostForm({ post }) {
 
       if (newDbPost) {
         dispatch(addPost({ post: newDbPost }));
-        navigate(`/post/${newDbPost.$id}`);
+        navigate(`/post/${newDbPost.slug}-${newDbPost.$id}`);
       }
     }
   };
@@ -344,8 +345,7 @@ function PostForm({ post }) {
         .replace(/[^a-zA-Z\d\s]+/g, "-")
         .replace(/\s/g, "-")
         .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 36);
+        .replace(/^-+|-+$/g, "");
 
     return "";
   }, []);
@@ -391,7 +391,7 @@ function PostForm({ post }) {
                     "This page is asking you to confirm that you want to leave — information you’ve entered may not be saved."
                   )
                 ) {
-                  navigate(`/post/${post.$id}`);
+                  navigate(`/post/${post.slug}-${post.$id}`);
                 }
                 navigate("/all-posts");
               }}

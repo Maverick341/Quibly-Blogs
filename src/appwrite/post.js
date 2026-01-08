@@ -14,13 +14,14 @@ export class Service {
     this.bucket = new Storage(this.client);
   }
 
-  async createPost({ title, subtitle, slug, content, featuredImage, status, publishStatus, userId, authorName }) {
+  async createPost({ slug, title, subtitle, content, featuredImage, status, publishStatus, userId, authorName }) {
     try {
       return await this.databases.createRow({
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteArticlesTableId,
-        rowId: slug,
+        rowId: ID.unique(),
         data: {
+          slug,
           title,
           subtitle,
           content,
@@ -36,13 +37,14 @@ export class Service {
     }
   }
 
-  async updatePost(slug, { title, subtitle, content, featuredImage, status, publishStatus, authorName }) {
+  async updatePost(id, { slug, title, subtitle, content, featuredImage, status, publishStatus, authorName }) {
     try {
       return await this.databases.updateRow({
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteArticlesTableId,
-        rowId: slug,
+        rowId: id,
         data: {
+          slug,
           title,
           subtitle,
           content,
@@ -57,12 +59,12 @@ export class Service {
     }
   }
 
-  async deletePost(slug) {
+  async deletePost(id) {
     try {
       await this.databases.deleteRow({
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteArticlesTableId,
-        rowId: slug,
+        rowId: id,
       });
 
       return true;
@@ -72,12 +74,12 @@ export class Service {
     }
   }
 
-  async getPost(slug) {
+  async getPost(id) {
     try {
       return await this.databases.getRow({
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteArticlesTableId,
-        rowId: slug,
+        rowId: id,
       });
     } catch (error) {
       console.log("Appwrite service :: getPost :: error ", error);

@@ -3,7 +3,7 @@ import postService from "@/appwrite/post";
 import profileService from "@/appwrite/profile";
 import { Link } from "react-router-dom";
 
-function PostCard({ $id, title, subtitle, featuredImage, userId, $createdAt }) {
+function PostCard({ $id, slug, title, subtitle, userId, $createdAt }) {
   const [authorName, setAuthorName] = useState("Anonymous");
 
   useEffect(() => {
@@ -58,7 +58,7 @@ function PostCard({ $id, title, subtitle, featuredImage, userId, $createdAt }) {
         {/* Read More Button */}
         <div className="text-right">
           <Link
-            to={`/post/${$id}`}
+            to={`/post/${slug}-${$id}`}
             className="text-sm text-[#a8956b] hover:underline cursor-pointer"
           >
             Read more →

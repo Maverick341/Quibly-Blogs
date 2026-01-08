@@ -1,7 +1,7 @@
 import React from "react";
 import { EditorOutput } from "..";
 
-function ArticlePreview({ title, subtitle, content, coverImage }) {
+function ArticlePreview({ slug, title, subtitle, content, coverImage }) {
   function safeParse(value, fallback = { blocks: [] }) {
     try {
       if (typeof value === "string") return JSON.parse(value);

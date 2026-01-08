@@ -13,6 +13,7 @@ import postService from "@/appwrite/post";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, EditorOutput } from "@/Components";
 import { removePost, setCurrentPost, editPost } from "@/store/postSlice";
+import { parseSlugId } from "@/utils/parseSlugId";
 
 export default function Post() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,7 +23,9 @@ export default function Post() {
   const post = useSelector((state) => state.post.currentPost);
 
   // const [post, setPost] = useState(null);
-  const { slug } = useParams();
+  const { slug: slugParam } = useParams();
+  const { slug, id } = parseSlugId(slugParam);
+
   const navigate = useNavigate();
 
   const userData = useSelector((state) => state.auth.userData);
@@ -30,15 +33,15 @@ export default function Post() {
   const isAuthor = post && userData ? post.userId === userData.$id : false;
 
   useEffect(() => {
-    if (slug) {
-      postService.getPost(slug).then((post) => {
+    if (slug && id) {
+      postService.getPost(id).then((post) => {
         if (post) {
           dispatch(setCurrentPost({ post }));
           // setPost(post);
         } else navigate("/");
       });
     } else navigate("/");
-  }, [slug, navigate]);
+  }, [id, navigate]);
 
   // Close menu when clicking outside or scrolling
   useEffect(() => {
@@ -202,7 +205,7 @@ export default function Post() {
               {/* Share button - available to all */}
               <Button
                 onClick={() => {
-                  const shareUrl = `${window.location.origin}/post/${slug}`;
+                  const shareUrl = `${window.location.origin}/post/${slug}-${id}`;
                   if (navigator.share) {
                     navigator.share({
                       title: post.title,
@@ -239,7 +242,7 @@ export default function Post() {
                     {/* Dropdown Menu */}
                     {showMenu && (
                       <div className="absolute left-0 bottom-full mb-2 w-28 bg-[#faf9f7] dark:bg-[#35383c] rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-[#d8d4cc] dark:border-[#4a4d52] py-1 z-50 backdrop-blur-sm">
-                        <Link to={`/edit-post/${post.$id}`}>
+                        <Link to={`/edit-post/${post.slug}-${post.$id}`}>
                           <button
                             onClick={() => setShowMenu(false)}
                             className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#3a3a3a] dark:text-[#e0deda] hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium first:rounded-t-lg"

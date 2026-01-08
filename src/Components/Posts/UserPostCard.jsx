@@ -39,7 +39,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
       {/* Title Column */}
       <td className="py-4 px-4">
         <Link
-          to={`/post/${$id}`}
+          to={`/post/${slug}-${$id}`}
           className="text-base font-medium text-[#1f2226] dark:text-[#e8e6e3] hover:text-[#a8956b] dark:hover:text-[#a8956b] transition-colors line-clamp-1 block"
         >
           {title}
@@ -75,7 +75,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
         <div className="flex items-center justify-end gap-1">
           
           <button
-            onClick={() => status !== "deleted" && navigate(`/edit-post/${$id}`)}
+            onClick={() => status !== "deleted" && navigate(`/edit-post/${slug}-${$id}`)}
             disabled={status === "deleted"}
             className={`p-1.5 rounded-md transition-colors ${
               status === "deleted"
@@ -123,7 +123,7 @@ function UserPostCard({ $id, title, slug, status, publishStatus, $createdAt, onD
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#35383c] rounded-lg shadow-xl border border-[#e5e4e0] dark:border-[#4a4d52] py-1 z-100">
                 <button
                   onClick={() => {
-                    navigate(`/post/${$id}`);
+                    navigate(`/post/${slug}-${$id}`);
                     setShowMenu(false);
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#4f5358] dark:text-[#c5c3bf] hover:bg-[#f8f7f4] dark:hover:bg-[#2a2d31] transition-colors cursor-pointer"

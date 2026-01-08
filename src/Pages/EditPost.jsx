@@ -4,18 +4,20 @@ import postService from "@/appwrite/post";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentPost } from "@/store/postSlice";
+import { parseSlugId } from "@/utils/parseSlugId";
 
 function EditPost() {
   const dispatch = useDispatch();
   const post = useSelector((state) => state.post.currentPost);
 
   //  const [post, setPost] = useState(null);
-  const { slug } = useParams();
+  const { slug: slugParam } = useParams();
+  const { slug, id } = parseSlugId(slugParam);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (slug) {
-      postService.getPost(slug).then((post) => {
+    if (slug && id) {
+      postService.getPost(id).then((post) => {
         if (post) {
           dispatch(setCurrentPost({ post }));
           //  setPost(post);
@@ -24,7 +26,7 @@ function EditPost() {
     } else {
       navigate("/");
     }
-  }, [slug, navigate]);
+  }, [id, navigate]);
   return post ? (
     <Container>
       <PostForm post={post} />

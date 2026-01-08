@@ -68,6 +68,15 @@ function PostForm({ post }) {
     }
   }, []);
 
+  // Ensure prefilled multi-line values expand on mount/changes
+  useEffect(() => {
+    if (_titleRef.current) autoExpandTextarea(_titleRef.current);
+  }, [watchedTitle, autoExpandTextarea]);
+
+  useEffect(() => {
+    if (subtitleInputRef.current) autoExpandTextarea(subtitleInputRef.current);
+  }, [watchedSubtitle, autoExpandTextarea]);
+
   const handlePreview = useCallback(async () => {
     if (!editorRef.current) return;
 
@@ -313,8 +322,7 @@ function PostForm({ post }) {
       }
 
       console.log(payload);
-      
-      
+
       const newDbPost = await postService.createPost({
         ...payload,
         userId: userData.$id,
@@ -697,8 +705,9 @@ function PostForm({ post }) {
                 if (e) autoExpandTextarea(e);
               }}
               placeholder="Article Subtitle..."
-              className="w-full text-lg sm:text-xl md:text-2xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] resize-none overflow-hidden"
-              rows="1"
+              className="w-full text-base sm:text-lg md:text-xl text-[#4f5358] dark:text-[#c5c3bf] bg-transparent border-none focus:outline-none placeholder:text-[#c5c3bf] dark:placeholder:text-[#666] resize-none overflow-hidden"
+              rows="2"
+              style={{ minHeight: "3.5rem" }}
               {...register("subtitle")}
               onChange={(e) => {
                 autoExpandTextarea(e.target);
@@ -717,7 +726,7 @@ function PostForm({ post }) {
                 setShowSubtitle(false);
               }}
               aria-label="Remove subtitle"
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#9aa0a6] hover:text-[#8c7a57] dark:text-[#666] dark:hover:text-[#a8956b]"
+              className="absolute right-0 top-1 text-[#9aa0a6] hover:text-[#8c7a57] dark:text-[#666] dark:hover:text-[#a8956b] hover:bg-black/5 dark:hover:bg-white/5 rounded-full p-1 transition-colors"
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>

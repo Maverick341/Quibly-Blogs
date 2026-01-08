@@ -40,7 +40,7 @@ export default function Post() {
     } else navigate("/");
   }, [slug, navigate]);
 
-  // Close menu when clicking outside
+  // Close menu when clicking outside or scrolling
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -48,11 +48,17 @@ export default function Post() {
       }
     };
 
+    const handleScroll = () => {
+      setShowMenu(false);
+    };
+
     if (showMenu) {
       document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("scroll", handleScroll);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [showMenu]);
 
@@ -109,150 +115,6 @@ export default function Post() {
 
   const authorName = post?.authorName || "Anonymous";
 
-  // function renderTextWithBreaks(text) {
-  //   if (text == null) return null;
-    
-  //   // First split by <br> tags
-  //   const parts = String(text).split(/<br\s*\/?>/gi);
-    
-  //   return parts.map((part, idx) => {
-  //     // Then process each part for inline code tags
-  //     const codeParts = part.split(/(<code[^>]*>.*?<\/code>)/gi);
-      
-  //     const processed = codeParts.map((segment, segIdx) => {
-  //       if (/<code[^>]*>/.test(segment)) {
-  //         // Extract code content from the tag
-  //         const codeMatch = segment.match(/<code[^>]*>(.*?)<\/code>/i);
-  //         if (codeMatch) {
-  //           return (
-  //             <code
-  //               key={`code-${idx}-${segIdx}`}
-  //               className="bg-[#e8e6e3] dark:bg-[#3a3d41] px-1.5 py-0.5 rounded text-[#a8956b] text-xs sm:text-sm font-mono"
-  //             >
-  //               {codeMatch[1]}
-  //             </code>
-  //           );
-  //         }
-  //       }
-  //       return segment;
-  //     });
-      
-  //     return (
-  //       <React.Fragment key={idx}>
-  //         {processed}
-  //         {idx !== parts.length - 1 ? <br /> : null}
-  //       </React.Fragment>
-  //     );
-  //   });
-  // }
-
-  // function renderBlock(block, i) {
-  //   switch (block.type) {
-  //     case "paragraph":
-  //       return <p key={i}>{renderTextWithBreaks(block.data.text)}</p>;
-
-  //     case "header":
-  //       return React.createElement(
-  //         `h${block.data.level}`,
-  //         { key: i },
-  //         renderTextWithBreaks(block.data.text)
-  //       );
-
-  //     case "embed":
-  //       return (
-  //         <figure key={i} className="my-6 sm:my-8">
-  //           <div
-  //             className="
-  //         relative w-full overflow-hidden rounded-lg
-  //         bg-black/5
-  //         pt-[56.25%]
-  //         max-w-full
-  //       "
-  //           >
-  //             <iframe
-  //               src={block.data.embed}
-  //               className="
-  //           absolute inset-0
-  //           h-full w-full
-  //           border-0
-  //         "
-  //               allow="autoplay; fullscreen; picture-in-picture"
-  //               allowFullScreen
-  //               loading="lazy"
-  //               referrerPolicy="no-referrer"
-  //             />
-  //           </div>
-
-  //           {block.data.caption && (
-  //             <figcaption
-  //               className="
-  //           mt-2 px-2
-  //           text-center text-xs sm:text-sm
-  //           text-muted-foreground
-  //         "
-  //             >
-  //               {block.data.caption}
-  //             </figcaption>
-  //           )}
-  //         </figure>
-  //       );
-
-  //     case "list":
-  //       return (
-  //         <ul key={i}>
-  //           {block.data.items.map((item, j) => (
-  //             <li key={j}>{item}</li>
-  //           ))}
-  //         </ul>
-  //       );
-
-  //     case "quote":
-  //       return <blockquote key={i}>{block.data.text}</blockquote>;
-
-  //     case "code":
-  //       return (
-  //         <pre key={i}>
-  //           <code>{block.data.code}</code>
-  //         </pre>
-  //       );
-
-  //     case "table":
-  //       return (
-  //         <table key={i} className="w-full border-collapse border border-[#d0cdc8] dark:border-[#3a3d41]">
-  //           <tbody>
-  //             {block.data.content.map((row, rowIdx) => (
-  //               <tr key={rowIdx}>
-  //                 {row.map((cell, cellIdx) => (
-  //                   <td
-  //                     key={cellIdx}
-  //                     className="border border-[#d0cdc8] dark:border-[#3a3d41] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm"
-  //                   >
-  //                     {cell}
-  //                   </td>
-  //                 ))}
-  //               </tr>
-  //             ))}
-  //           </tbody>
-  //         </table>
-  //       );
-
-  //     case "image":
-  //       return (
-  //         <img
-  //           key={i}
-  //           src={block.data.file.url}
-  //           alt={block.data.caption || ""}
-  //         />
-  //       );
-
-  //     case "br":
-  //       return <br key={i} />;
-
-  //     default:
-  //       return null;
-  //   }
-  // }
-
   function safeParse(value, fallback = { blocks: [] }) {
     try {
       if (typeof value === "string") return JSON.parse(value);
@@ -265,7 +127,7 @@ export default function Post() {
 
   return post ? (
     <article className="min-h-screen bg-[#f5f3f0] dark:bg-[#2a2d31] pb-8 sm:pb-12 px-4 sm:px-6">
-      <div className="max-w-[720px] mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Featured Image first */}
         <figure
           className={`relative mt-6 sm:mt-8 mb-6 sm:mb-10 rounded-lg sm:rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]`}
@@ -290,9 +152,15 @@ export default function Post() {
         <div className="relative">
           {/* Title and meta below image */}
           <header className="mb-4 sm:mb-6">
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1a1a1a] dark:text-[#f5f3f0] mb-3 sm:mb-4 leading-tight">
+            <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl font-semibold text-[#1a1a1a] dark:text-[#f5f3f0] mb-2 sm:mb-3 leading-tight">
               {post.title}
             </h1>
+
+            {post.subtitle && (
+              <p className="font-sans text-sm sm:text-base text-[#4a4a4a] dark:text-[#c5c3bf] mb-3 sm:mb-4 leading-relaxed">
+                {post.subtitle}
+              </p>
+            )}
 
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#666] dark:text-[#a8a8a8]">
               {formattedDate && <time className="italic">{formattedDate}</time>}
@@ -317,26 +185,13 @@ export default function Post() {
 
             {/* Content container */}
             <div
-              className="prose prose-sm sm:prose-base max-w-none
-                        bg-[#f5f4f0] dark:bg-[#2a2d31]
+              className="bg-[#f5f4f0] dark:bg-[#2a2d31]
                         text-[#2a2a2a] dark:text-[#e8e6e3]
                         border-l border-r border-t border-[#d0cdc8] dark:border-[#3a3d41]
-                        rounded-t-lg
                         px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6
                         relative
-                        min-h-[300px] sm:min-h-[400px]
-                        prose-headings:font-serif prose-headings:text-[#1a1a1a] dark:prose-headings:text-[#f5f3f0] prose-headings:font-bold
-                        prose-h2:text-2xl sm:prose-h2:text-3xl prose-h2:mt-8 sm:prose-h2:mt-12 prose-h2:mb-3 sm:prose-h2:mb-4
-                        prose-h3:text-xl sm:prose-h3:text-2xl prose-h3:mt-6 sm:prose-h3:mt-8 prose-h3:mb-2 sm:prose-h3:mb-3
-                        prose-p:leading-6 sm:prose-p:leading-7 prose-p:mb-4 sm:prose-p:mb-6 prose-p:text-xs sm:prose-p:text-sm
-                        prose-a:text-[#a8956b] prose-a:no-underline hover:prose-a:underline
-                        prose-ul:my-4 sm:prose-ul:my-6 prose-ol:my-4 sm:prose-ol:my-6 prose-li:my-1 sm:prose-li:my-2 prose-li:leading-5 sm:prose-li:leading-6 prose-li:text-xs sm:prose-li:text-sm
-                        prose-blockquote:border-l-4 prose-blockquote:border-[#a8956b] prose-blockquote:pl-4 sm:prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-[#4a4a4a] dark:prose-blockquote:text-[#b8b6b3] prose-blockquote:text-xs sm:prose-blockquote:text-sm
-                        prose-img:rounded-lg prose-img:my-6 sm:prose-img:my-8
-                        prose-strong:text-[#1a1a1a] dark:prose-strong:text-[#f5f3f0] prose-strong:font-semibold
-                        prose-code:text-[#a8956b] prose-code:bg-[#e8e6e3] dark:prose-code:bg-[#3a3d41] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs sm:prose-code:text-sm"
+                        min-h-[300px] sm:min-h-[400px]"
             >
-              {/* {safeParse(post.content, { blocks: [] }).blocks.map(renderBlock)} */}
               <EditorOutput content={safeParse(post.content, { blocks: [] })} />
             </div>
           </div>
@@ -383,49 +238,29 @@ export default function Post() {
 
                     {/* Dropdown Menu */}
                     {showMenu && (
-                      <div className="absolute right-0 bottom-full mb-2 w-44 sm:w-48 bg-[#faf9f7] dark:bg-[#35383c] rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-[#d8d4cc] dark:border-[#4a4d52] py-1.5 z-50 backdrop-blur-sm">
+                      <div className="absolute left-0 bottom-full mb-2 w-28 bg-[#faf9f7] dark:bg-[#35383c] rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-[#d8d4cc] dark:border-[#4a4d52] py-1 z-50 backdrop-blur-sm">
                         <Link to={`/edit-post/${post.$id}`}>
                           <button
                             onClick={() => setShowMenu(false)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 sm:py-2 text-sm sm:text-base text-[#3a3a3a] dark:text-[#e0deda] hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium first:rounded-t-xl"
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#3a3a3a] dark:text-[#e0deda] hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium first:rounded-t-lg"
                           >
-                            {/* <Pencil
-                              className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0 text-[#8c7a57]"
-                              strokeWidth={2}
-                            /> */}
                             <span className="text-left">Edit</span>
                           </button>
                         </Link>
-                        <div className="h-px bg-[#e8e5df] dark:bg-[#414549] mx-2 my-1" />
+                        <div className="h-px bg-[#e8e5df] dark:bg-[#414549] mx-1.5 my-0.5" />
                         <Link to="/all-posts">
                           <button
                             onClick={() => {
                               moveToTrash();
                               setShowMenu(false);
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-2.5 sm:py-2 text-sm sm:text-base hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium last:rounded-b-xl ${
+                            className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-[#f0ede8] dark:hover:bg-[#2f3236] transition-all duration-150 cursor-pointer font-medium last:rounded-b-lg ${
                               post.status === "active"
                                 ? "text-[#c9302c] dark:text-[#ff6b6b]"
                                 : "text-[#5cb85c] dark:text-[#51cf66]"
                             }`}
                           >
-                            {post.status === "active" ? (
-                              <>
-                                {/* <Trash2
-                                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
-                                  strokeWidth={2}
-                                /> */}
-                                <span className="text-left">Move to Trash</span>
-                              </>
-                            ) : (
-                              <>
-                                {/* <RotateCcw
-                                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] shrink-0"
-                                  strokeWidth={2}
-                                /> */}
-                                <span className="text-left">Restore</span>
-                              </>
-                            )}
+                            <span className="text-left">{post.status === "active" ? "Move to Trash" : "Restore"}</span>
                           </button>
                         </Link>
                       </div>

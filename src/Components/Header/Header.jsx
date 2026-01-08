@@ -11,14 +11,21 @@ function Header() {
 
   const navItems = [
     // { name: "Home", slug: "/", active: true },
-    { name: "Home", slug: "/all-posts", active: authStatus && location.pathname !== "/all-posts" },
+    {
+      name: "Home",
+      slug: "/all-posts",
+      active: authStatus && location.pathname !== "/all-posts",
+    },
     { name: "Login", slug: "/login", active: !authStatus },
     { name: "Signup", slug: "/signup", active: !authStatus },
     // { name: "Add Post", slug: "/add-post", active: authStatus },
   ];
 
   return (
-    <header className="py-2 bg-[#eeebe4] text-[#1f2226] border-b border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347]">
+    <header
+      className={`py-2 bg-[#eeebe4] text-[#1f2226] border-b border-[#e0ded8] dark:bg-[#2a2d31] dark:text-[#e8e6e3] dark:border-[#3f4347] sticky top-0 z-50 transition-opacity duration-500 ease-in-out opacity-95`}
+      // style={{ opacity: isSticky ? 0.95 : 1 }}
+    >
       <Container>
         <nav className="flex items-center">
           <div className="mr-4">

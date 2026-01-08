@@ -17,7 +17,7 @@ function CustomCodeRenderer({ data, className = "" }) {
 
   return (
     <div className={`relative group ${className}`.trim()}>
-      <pre className="bg-gray-200 dark:bg-gray-900 rounded-md p-4 pr-12 overflow-auto">
+      <pre className="bg-gray-200 dark:bg-gray-900 rounded-sm p-4 pr-12 overflow-auto">
         <code className="text-gray-900 dark:text-gray-100 text-sm">{data.code}</code>
       </pre>
       <button

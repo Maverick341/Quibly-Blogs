@@ -187,7 +187,7 @@ export default function Post() {
             <div
               className="bg-[#f5f4f0] dark:bg-[#2a2d31]
                         text-[#2a2a2a] dark:text-[#e8e6e3]
-                        border-l border-r border-t border-[#d0cdc8] dark:border-[#3a3d41]
+                        border border-[#d0cdc8] dark:border-[#3a3d41]
                         px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6
                         relative
                         min-h-[300px] sm:min-h-[400px]"
@@ -198,7 +198,7 @@ export default function Post() {
 
           {/* Action Bar - Below Content */}
           <div className="flex sticky bottom-10 justify-center mt-4 sm:mt-6 transition-all duration-300">
-            <div className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 bg-white dark:bg-[#35383c] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#e0dcd5] dark:border-[#414549]">
+            <div className="inline-flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 bg-white dark:bg-[#35383c] rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-[#e0dcd5] dark:border-[#414549]">
               {/* Share button - available to all */}
               <Button
                 onClick={() => {

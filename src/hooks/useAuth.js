@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import authService from "@/appwrite/auth";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { getToastStyles } from "@/utils/toastStyles";
 import {
   login as authLogin,
   logout as authLogout,
@@ -44,6 +46,24 @@ export const useAuth = () => {
   );
 
   useEffect(() => {
+    // Check for OAuth success/failure in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const oauthStatus = urlParams.get('oauth');
+
+    if (oauthStatus === 'success') {
+      toast.success('Welcome! Successfully logged in.', {
+        style: getToastStyles("success"),
+      });
+      // Clean URL
+      window.history.replaceState({}, '', '/');
+    } else if (oauthStatus === 'failed') {
+      toast.error('Authentication failed. Please try again.', {
+        style: getToastStyles("error"),
+      });
+      // Clean URL
+      window.history.replaceState({}, '', '/signup');
+    }
+
     checkSession();
   }, [checkSession]);
 

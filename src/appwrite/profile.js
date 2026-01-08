@@ -1,5 +1,7 @@
 import conf from "@/conf/conf";
 import { Client, TablesDB, Storage } from "appwrite";
+import toast from "react-hot-toast";
+import { getToastStyles } from "@/utils/toastStyles";
 
 export class Service {
     client = new Client();
@@ -29,6 +31,9 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: createProfile :: error ", error);
+            toast.error(error.message || "Failed to create profile", {
+                style: getToastStyles("error"),
+            });
             throw error;
         }
     }
@@ -47,8 +52,11 @@ export class Service {
     }
 
     async updateProfile(userId, { name, age, bio, avatar }) {
+        const toastId = toast.loading("Updating profile...", {
+            style: getToastStyles(),
+        });
         try {
-            return await this.databases.updateRow({
+            const profile = await this.databases.updateRow({
                 databaseId: conf.appwriteDatabaseId,
                 tableId: conf.appwriteProfilesTableId,
                 rowId: userId,
@@ -59,8 +67,17 @@ export class Service {
                     avatar,
                 },
             });
+            toast.success("Profile updated successfully!", {
+                id: toastId,
+                style: getToastStyles("success"),
+            });
+            return profile;
         } catch (error) {
             console.log("Appwrite service :: updateProfile :: error ", error);
+            toast.error(error.message || "Failed to update profile", {
+                id: toastId,
+                style: getToastStyles("error"),
+            });
             throw error;
         }   
     }
@@ -75,20 +92,35 @@ export class Service {
             });
         } catch (error) {
             console.log("Appwrite service :: listProfiles :: error ", error);
+            toast.error("Failed to load profiles", {
+                style: getToastStyles("error"),
+            });
             throw error;
         }
     }
 
     // Optional: delete a profile (use for account deletion/admin)
     async deleteProfile(userId) {
+        const toastId = toast.loading("Deleting profile...", {
+            style: getToastStyles(),
+        });
         try {
-            return await this.databases.deleteRow({
+            const result = await this.databases.deleteRow({
                 databaseId: conf.appwriteDatabaseId,
                 tableId: conf.appwriteProfilesTableId,
                 rowId: userId,
             });
+            toast.success("Profile deleted successfully!", {
+                id: toastId,
+                style: getToastStyles("success"),
+            });
+            return result;
         } catch (error) {
             console.log("Appwrite service :: deleteProfile :: error ", error);
+            toast.error(error.message || "Failed to delete profile", {
+                id: toastId,
+                style: getToastStyles("error"),
+            });
             throw error;
         }
     }

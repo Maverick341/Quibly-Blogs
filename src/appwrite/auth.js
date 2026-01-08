@@ -1,6 +1,8 @@
 import conf from "@/conf/conf";
 import { Client, Account, ID } from "appwrite";
 import profileService from "./profile";
+import toast from "react-hot-toast";
+import { getToastStyles } from "@/utils/toastStyles";
 
 export class Service {
   client = new Client();
@@ -14,6 +16,7 @@ export class Service {
   }
 
   async createAccount({ email, password, name, age, bio }) {
+    const toastId = toast.loading("Creating account...");
     try {
       const userAccount = await this.account.create({
         userId: ID.unique(),
@@ -35,9 +38,18 @@ export class Service {
           avatar: null,
         });
 
+        toast.success("Account created successfully!", { 
+          id: toastId,
+          style: getToastStyles("success"),
+        });
         return userAccount;
       } else {
-        return null;
+        const errorMessage = error.message || "Account creation failed.";
+        toast.error(errorMessage, { 
+          id: toastId,
+          style: getToastStyles("error"),
+        });
+        throw error;
       }
     } catch (error) {
       throw error;
@@ -45,16 +57,34 @@ export class Service {
   }
 
   async login({ email, password }) {
+    const toastId = toast.loading("Logging in...", {
+      style: getToastStyles(),
+    });
     try {
-      return await this.account.createEmailPasswordSession({ email, password });
+      const session = await this.account.createEmailPasswordSession({
+        email,
+        password,
+      });
+      toast.success("Login successful!", {
+        id: toastId,
+        style: getToastStyles("success"),
+      });
+      return session;
     } catch (error) {
+      const errorMessage =
+        error.message || "Login failed. Please check your credentials.";
+      toast.error(errorMessage, { 
+        id: toastId,
+        style: getToastStyles("error"),
+      });
       throw error;
     }
   }
 
   async getCurrentUser() {
     try {
-      return await this.account.get();
+      const session = await this.account.get();
+      return session;
     } catch (error) {
       console.log("Appwrite service :: getCurrentUser :: error ", error);
       throw error;
@@ -62,18 +92,34 @@ export class Service {
   }
 
   async logout() {
+    const toastId = toast.loading("Signing out...", {
+      style: getToastStyles(),
+    });
     try {
-      return await this.account.deleteSessions();
+      const result = await this.account.deleteSessions();
+      toast.success("Logged out successfully", { 
+        id: toastId,
+        style: getToastStyles("success"),
+      });
+      return result;
     } catch (error) {
       console.log("Appwrite service :: logout :: error", error);
+      toast.error("Failed to log out", { 
+        id: toastId,
+        style: getToastStyles("error"),
+      });
       throw error;
     }
   }
 
   async OAuth2SignUp({ provider }) {
+    toast.loading(`Redirecting to ${provider}...`, { 
+      duration: 2000,
+      style: getToastStyles(),
+    });
     try {
-      const successUrl = window.location.origin + '/';
-      const failureUrl = window.location.origin + '/signup';
+      const successUrl = window.location.origin + "/?oauth=success";
+      const failureUrl = window.location.origin + "/signup?oauth=failed";
 
       return this.account.createOAuth2Session({
         provider,
@@ -82,6 +128,9 @@ export class Service {
       });
     } catch (error) {
       console.log("Appwrite service :: OAuth2SignUp :: error", error);
+      toast.error(`Failed to connect with ${provider}`, {
+        style: getToastStyles("error"),
+      });
       throw error;
     }
   }

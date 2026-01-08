@@ -3,8 +3,9 @@ import postService from "@/appwrite/post";
 import profileService from "@/appwrite/profile";
 import { Link } from "react-router-dom";
 
-function PostCard({ $id, slug, title, subtitle, userId, $createdAt }) {
+function PostCard({ $id, slug, title, subtitle, userId, featuredImage, $createdAt }) {
   const [authorName, setAuthorName] = useState("Anonymous");
+  console.log(userId);  
 
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -33,74 +34,58 @@ function PostCard({ $id, slug, title, subtitle, userId, $createdAt }) {
     });
   };
 
+  // Get image URL
+  const imageUrl = featuredImage 
+    ? postService.getFilePreview(featuredImage)
+    : null;
+
   return (
-    <article className="group bg-transparent hover:bg-[#f3f1eb] dark:hover:bg-[#2f3236] border border-transparent hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-all p-5 rounded-lg">
-      <div className="space-y-2">
-        {/* Author and Date */}
-        <div className="flex items-center gap-2 text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
-          <span className="font-normal">{authorName}</span>
-          <span>•</span>
-          <time>{formatDate($createdAt)}</time>
+    <Link to={`/post/${slug}-${$id}`}>
+      <article className="group bg-white/40 dark:bg-[#1a1c1e]/40 hover:bg-[#f3f1eb] dark:hover:bg-[#2f3236] border border-gray-200/50 dark:border-gray-700/50 hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-all p-6 rounded-xl">
+        <div className="flex gap-6 items-start">
+          {/* Content */}
+          <div className="flex-1 space-y-3">
+            {/* Author and Date */}
+            <div className="flex items-center gap-2 text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
+              <span className="font-normal">{authorName}</span>
+              <span>•</span>
+              <time>{formatDate($createdAt)}</time>
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl font-semibold text-[#1f2226] dark:text-[#e8e6e3] group-hover:text-[#a8956b] dark:group-hover:text-[#a8956b] transition-colors line-clamp-2">
+              {title}
+            </h2>
+
+            {/* Subtitle */}
+            {subtitle && (
+              <p className="text-base text-[#6a6e73] dark:text-[#9aa0a6] line-clamp-3">
+                {subtitle}
+              </p>
+            )}
+
+            {/* Read More */}
+            <div className="pt-2">
+              <span className="text-sm text-[#a8956b] cursor-pointer inline-flex items-center gap-1">
+                <span className="group-hover:underline">Read more</span>
+                <span>→</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Featured Image */}
+          {imageUrl && (
+            <div className="shrink-0 w-56 h-36 overflow-hidden rounded-lg">
+              <img
+                src={imageUrl}
+                alt={title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          )}
         </div>
-
-        {/* Title */}
-        <h2 className="text-2xl font-normal text-[#1f2226] dark:text-[#e8e6e3] group-hover:text-[#a8956b] dark:group-hover:text-[#a8956b] transition-colors line-clamp-2">
-          {title}
-        </h2>
-
-        {/* Subtitle */}
-        {subtitle && (
-          <p className="text-lg text-[#6a6e73] dark:text-[#9aa0a6] line-clamp-2">
-            {subtitle}
-          </p>
-        )}
-
-        {/* Read More Button */}
-        <div className="text-right">
-          <Link
-            to={`/post/${slug}-${$id}`}
-            className="text-sm text-[#a8956b] hover:underline cursor-pointer"
-          >
-            Read more →
-          </Link>
-        </div>
-      </div>
-    </article>
-
-    // <Link to={`/post/${$id}`}>
-    //   <article className="group cursor-pointer bg-[#ebe8e1] dark:bg-[#2f3236] border border-[#d0cdc7] dark:border-[#4a4d52] hover:border-[#a8956b] dark:hover:border-[#a8956b] transition-all p-5">
-    //     {/* Image Container */}
-    //     <figure className="relative overflow-hidden rounded-sm mb-4 aspect-16/10 bg-[#e5e4e0] dark:bg-[#35383c]">
-    //       <img
-    //         src={postService.getFileView(featuredImage)}
-    //         alt={title}
-    //         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-    //       />
-    //     </figure>
-
-    //     {/* Content */}
-    //     <div className="space-y-2">
-    //       {/* Author and Date */}
-    //       <div className="flex items-center gap-2 text-sm text-[#6a6e73] dark:text-[#9aa0a6]">
-    //         <span className="font-normal">{authorName}</span>
-    //         <span>•</span>
-    //         <time>{formatDate($createdAt)}</time>
-    //       </div>
-
-    //       {/* Title */}
-    //       <h2 className="text-lg font-normal text-[#1f2226] dark:text-[#e8e6e3] group-hover:text-[#a8956b] dark:group-hover:text-[#a8956b] transition-colors line-clamp-2">
-    //         {title}
-    //       </h2>
-
-    //       {/* Subtitle */}
-    //       {subtitle && (
-    //         <p className="text-sm text-[#6a6e73] dark:text-[#9aa0a6] line-clamp-2">
-    //           {subtitle}
-    //         </p>
-    //       )}
-    //     </div>
-    //   </article>
-    // </Link>
+      </article>
+    </Link>
   );
 }
 

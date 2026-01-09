@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost, editPost } from "@/store/postSlice";
 import { X, ChevronDown, Trash2, ArrowLeft } from "lucide-react";
-import { CodeTool } from "@/editorjs";
+import { CodeTool, CustomHeader } from "@/editorjs";
 
 function PostForm({ post }) {
   const [previewImage, setPreviewImage] = useState(null);
@@ -104,11 +104,9 @@ function PostForm({ post }) {
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
     const Paragraph = (await import("@editorjs/paragraph")).default;
-    const Header = (await import("@editorjs/header")).default;
     const Embed = (await import("@editorjs/embed")).default;
     const Table = (await import("@editorjs/table")).default;
     const EditorjsList = (await import("@editorjs/list")).default;
-    // const CodeTool = (await import("@editorjs/code")).default;  // https://github.com/dev-juju/codebox used
     const InlineCode = (await import("@editorjs/inline-code")).default;
     const SimpleImage = (await import("@editorjs/simple-image")).default;
     const Quote = (await import("@editorjs/quote")).default;
@@ -128,7 +126,7 @@ function PostForm({ post }) {
             inlineToolbar: true,
           },
           header: {
-            class: Header,
+            class: CustomHeader,
             inlineToolbar: true,
             config: { levels: [2, 3, 4], defaultLevel: 2 },
           },
@@ -191,12 +189,6 @@ function PostForm({ post }) {
   const { ref: titleRef, ...rest } = register("title", {
     required: "Title is required",
   });
-
-  // const handlePreview = () => {
-  //   if (editorRef.current) {
-  //     editorRef.current.execCommand("mcePreview");
-  //   }
-  // };
 
   // Handle image preview for new posts
   const imageInput = watch("image");

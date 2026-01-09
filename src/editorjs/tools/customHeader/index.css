@@ -1,0 +1,34 @@
+/**
+ * Heading level-specific styles
+ */
+
+.ce-header {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin: auto 0;
+}
+
+.ce-header[data-tag="h1"] {
+  font-size: 2em;
+}
+
+.ce-header[data-tag="h2"] {
+  font-size: 1.5em;
+}
+
+.ce-header[data-tag="h3"] {
+  font-size: 1.25em;
+}
+
+.ce-header[data-tag="h4"] {
+  font-size: 1.1em;
+}
+
+.ce-header[data-tag="h5"] {
+  font-size: 1em;
+}
+
+.ce-header[data-tag="h6"] {
+  font-size: 0.9em;
+}

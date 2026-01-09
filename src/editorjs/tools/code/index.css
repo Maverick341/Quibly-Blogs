@@ -1,6 +1,9 @@
 .ce-code {
-    border-radius: 12px;
+    border-radius: 6px;
     overflow: visible;
+    max-width: 85%;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .ce-code__header {
@@ -9,7 +12,7 @@
     align-items: center;
     background: #3a3a3a;
     padding: 8px 12px;
-    border-radius: 8px 8px 0 0;
+    border-radius: 4px 4px 0 0;
     overflow: visible;
     position: relative;
 }
@@ -125,14 +128,14 @@
 
 .ce-code__textarea {
     min-height: 200px;
-    font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+    font-family: monospace, Menlo, Monaco, Consolas, Courier New;
     color: #e8e8e8;
     line-height: 1.6em;
-    font-size: 13px;
+    font-size: 15px;
     background: #1e1e1e;
     border: 1px solid #2d2d2d;
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 8px 8px;
     box-shadow: none;
     white-space: pre;
     word-wrap: normal;

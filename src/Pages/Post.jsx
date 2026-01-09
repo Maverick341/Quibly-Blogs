@@ -155,7 +155,7 @@ export default function Post() {
         <div className="relative">
           {/* Title and meta below image */}
           <header className="mb-4 sm:mb-6">
-            <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl font-semibold text-[#1a1a1a] dark:text-[#f5f3f0] mb-2 sm:mb-3 leading-tight">
+            <h1 className="font-sans text-xl sm:text-2xl md:text-3xl font-semibold text-[#1a1a1a] dark:text-[#f5f3f0] mb-2 sm:mb-3 leading-tight">
               {post.title}
             </h1>
 
@@ -190,7 +190,7 @@ export default function Post() {
             <div
               className="bg-[#f5f4f0] dark:bg-[#2a2d31]
                         text-[#2a2a2a] dark:text-[#e8e6e3]
-                        border border-[#d0cdc8] dark:border-[#3a3d41]
+                        
                         px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6
                         relative
                         min-h-[300px] sm:min-h-[400px]"

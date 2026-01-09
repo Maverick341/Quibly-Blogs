@@ -739,14 +739,6 @@ function PostForm({ post }) {
             ref={holderRef}
             className="w-full min-h-[500px] rounded-sm py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
           />
-
-          {/* <RTE
-            label=""
-            // name="content"
-            // control={control}
-            editorRef={editorRef}
-            defaultValue={getValues("content")}
-          /> */}
           <div className="h-4 mt-1 sm:mt-2">
             {errors.content && visibleErrors.content && (
               <p className="text-[10px] text-red-500 dark:text-red-400">

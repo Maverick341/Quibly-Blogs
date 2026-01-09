@@ -29,3 +29,8 @@
     rgba(63, 67, 71, 0) 100%
   ) 1;
 }
+
+/* Editor.js Styles */
+.ce-block__content, .ce-toolbar__content {
+  max-width: unset !important;
+}

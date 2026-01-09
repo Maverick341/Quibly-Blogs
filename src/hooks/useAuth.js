@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import authService from "@/appwrite/auth";
 import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { getToastStyles } from "@/utils/toastStyles";
 import {
   login as authLogin,

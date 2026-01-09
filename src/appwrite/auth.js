@@ -1,7 +1,7 @@
 import conf from "@/conf/conf";
 import { Client, Account, ID } from "appwrite";
 import profileService from "./profile";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { getToastStyles } from "@/utils/toastStyles";
 
 export class Service {
@@ -38,14 +38,14 @@ export class Service {
           avatar: null,
         });
 
-        toast.success("Account created successfully!", { 
+        toast.success("Account created successfully!", {
           id: toastId,
           style: getToastStyles("success"),
         });
         return userAccount;
       } else {
         const errorMessage = error.message || "Account creation failed.";
-        toast.error(errorMessage, { 
+        toast.error(errorMessage, {
           id: toastId,
           style: getToastStyles("error"),
         });
@@ -73,7 +73,7 @@ export class Service {
     } catch (error) {
       const errorMessage =
         error.message || "Login failed. Please check your credentials.";
-      toast.error(errorMessage, { 
+      toast.error(errorMessage, {
         id: toastId,
         style: getToastStyles("error"),
       });
@@ -97,14 +97,14 @@ export class Service {
     });
     try {
       const result = await this.account.deleteSessions();
-      toast.success("Logged out successfully", { 
+      toast.success("Logged out successfully", {
         id: toastId,
         style: getToastStyles("success"),
       });
       return result;
     } catch (error) {
       console.log("Appwrite service :: logout :: error", error);
-      toast.error("Failed to log out", { 
+      toast.error("Failed to log out", {
         id: toastId,
         style: getToastStyles("error"),
       });
@@ -113,7 +113,7 @@ export class Service {
   }
 
   async OAuth2SignUp({ provider }) {
-    toast.loading(`Redirecting to ${provider}...`, { 
+    toast.loading(`Redirecting to ${provider}...`, {
       duration: 2000,
       style: getToastStyles(),
     });

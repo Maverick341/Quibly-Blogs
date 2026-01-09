@@ -1,6 +1,6 @@
 import conf from "@/conf/conf.js";
 import { Client, TablesDB, Storage, Query, ID } from "appwrite";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { getToastStyles } from "@/utils/toastStyles";
 
 export class Service {
@@ -146,24 +146,16 @@ export class Service {
 
   // file upload service
   async uploadFile(file) {
-    const toastId = toast.loading("Uploading image...", {
-      style: getToastStyles(),
-    });
     try {
       const uploadedFile = await this.bucket.createFile({
         bucketId: conf.appwriteBucketId,
         fileId: ID.unique(),
         file,
       });
-      toast.success("Image uploaded successfully!", {
-        id: toastId,
-        style: getToastStyles("success"),
-      });
       return uploadedFile;
     } catch (error) {
       console.log("Appwrite service :: uploadFile :: error ", error);
       toast.error(error.message || "Failed to upload image", {
-        id: toastId,
         style: getToastStyles("error"),
       });
       return null;
@@ -171,23 +163,15 @@ export class Service {
   }
 
   async deleteFile(fileId) {
-    const toastId = toast.loading("Deleting image...", {
-      style: getToastStyles(),
-    });
     try {
       await this.bucket.deleteFile({
         bucketId: conf.appwriteBucketId,
         fileId,
       });
-      toast.success("Image deleted successfully!", {
-        id: toastId,
-        style: getToastStyles("success"),
-      });
       return true;
     } catch (error) {
       console.log("Appwrite service :: deleteFile :: error ", error);
       toast.error(error.message || "Failed to delete image", {
-        id: toastId,
         style: getToastStyles("error"),
       });
       return false;

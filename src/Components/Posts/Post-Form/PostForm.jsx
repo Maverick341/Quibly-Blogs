@@ -735,12 +735,10 @@ function PostForm({ post }) {
 
         {/* Content Editor */}
         <div className="mb-6 sm:mb-8">
-          <div className="w-full">
-            <div
-              ref={holderRef}
-              className="min-h-[500px] rounded-sm py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
-            />
-          </div>
+          <div
+            ref={holderRef}
+            className="w-full min-h-[500px] rounded-sm py-1" // border bg-[#f8f7f4] dark:bg-[#35383c] border-[#e5e4e0] dark:border-[#4a4d52]
+          />
 
           {/* <RTE
             label=""

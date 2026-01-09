@@ -1,6 +1,6 @@
 import conf from "@/conf/conf";
 import { Client, TablesDB, Storage } from "appwrite";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { getToastStyles } from "@/utils/toastStyles";
 
 export class Service {

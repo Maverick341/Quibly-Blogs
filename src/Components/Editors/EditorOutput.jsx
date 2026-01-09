@@ -8,18 +8,18 @@ const renderers = {
 
 const config = {
   paragraph: {
-    className: "text-xs sm:text-sm leading-6 sm:leading-7 mb-4 sm:mb-6",
+    className: "text-sm sm:text-base leading-7 sm:leading-8 mb-4 sm:mb-6",
   },
   header: {
     className:
-      "font-serif font-bold text-[#1a1a1a] dark:text-[#f5f3f0] mt-6 sm:mt-8 mb-3 sm:mb-4",
+      "font-bold text-[#1a1a1a] dark:text-[#f5f3f0] mt-8 sm:mt-10 mb-4 sm:mb-5 text-lg sm:text-2xl",
   },
   list: {
-    className: "text-xs sm:text-sm space-y-2 sm:space-y-3",
+    className: "text-sm sm:text-base space-y-2 sm:space-y-3 -ml-2 sm:-ml-3",
   },
   quote: {
     className:
-      "border-l-4 border-[#a8956b] pl-4 sm:pl-6 italic text-xs sm:text-sm text-[#4a4a4a] dark:text-[#b8b6b3] my-4 sm:my-6",
+      "w-full border-l-4 border-[#a8956b] pl-5 sm:pl-8 italic text-sm sm:text-base text-[#4a4a4a] dark:text-[#b8b6b3] my-5 sm:my-7 py-1",
   },
   code: {
     className: "my-4 sm:my-6",
@@ -28,11 +28,11 @@ const config = {
     className: "w-full border-collapse border border-[#d0cdc8] dark:border-[#3a3d41] text-xs sm:text-sm",
   },
   image: {
-    className: "my-6 sm:my-8",
+    className: "my-7 sm:my-9",
     actionsClassNames: {
       stretched: "w-full",
-      withBorder: "border border-[#d0cdc8] dark:border-[#3a3d41]",
-      withBackground: "p-2 bg-[#f7f5f2] dark:bg-[#26292d]",
+      withBorder: "border border-[#d0cdc8] dark:border-[#3a3d41] rounded-md",
+      withBackground: "p-3 sm:p-4 bg-[#f7f5f2] dark:bg-[#26292d] rounded-md",
     },
   },
   embed: {

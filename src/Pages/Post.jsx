@@ -3,16 +3,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronsUpDown,
   Share2,
-  // Trash2,
-  // RotateCcw,
   MoreVertical,
-  // Pencil,
-  ArrowLeft,
 } from "lucide-react";
 import postService from "@/appwrite/post";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, EditorOutput } from "@/Components";
-import { removePost, setCurrentPost, editPost } from "@/store/postSlice";
+import { setCurrentPost, editPost } from "@/store/postSlice";
 import { parseSlugId } from "@/utils/parseSlugId";
 
 export default function Post() {

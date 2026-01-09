@@ -124,6 +124,9 @@ function PostForm({ post }) {
           paragraph: {
             class: Paragraph,
             inlineToolbar: true,
+            config: {
+              preserveBlank: true, 
+            },
           },
           header: {
             class: CustomHeader,

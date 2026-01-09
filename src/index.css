@@ -15,6 +15,43 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer components {
+  /* Light */
+  .ce-toolbar__plus,
+  .ce-toolbar__settings-btn {
+    @apply bg-[#f5f4f0] text-[#1f2226] shadow-sm;
+  }
+  .ce-toolbar__plus:hover,
+  .ce-toolbar__settings-btn:hover {
+    @apply bg-[#f5f4f0];
+  }
+
+  /* Dark (assumes body has .dark) */
+  .dark .ce-toolbar__plus,
+  .dark .ce-toolbar__settings-btn {
+    @apply bg-[#2a2d31] text-[#e8e6e3] shadow-sm;
+  }
+  .dark .ce-toolbar__plus:hover,
+  .dark .ce-toolbar__settings-btn:hover {
+    @apply bg-[#34383d];
+  }
+
+  /* Force toolbar icons to inherit light tone in dark mode */
+  .dark .ce-toolbar__plus svg,
+  .dark .ce-toolbar__settings-btn svg {
+    color: #e8e6e3;
+    fill: currentColor;
+    stroke: currentColor;
+  }
+
+  .dark .ce-toolbar__plus svg:hover,
+  .dark .ce-toolbar__settings-btn svg:hover {
+    color: #34383d;
+    fill: currentColor;
+    stroke: currentColor;
+  }
+}
+
 @theme inline {
   --font-serif: "Georgia", "Cambria", "Times New Roman", serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif;

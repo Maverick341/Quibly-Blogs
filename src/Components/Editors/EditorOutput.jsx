@@ -19,7 +19,7 @@ const config = {
   },
   quote: {
     className:
-      "w-full border-l-4 border-[#a8956b] pl-5 sm:pl-8 italic text-sm sm:text-base text-[#4a4a4a] dark:text-[#b8b6b3] my-5 sm:my-7 py-1",
+      "w-full italic text-sm sm:text-base text-[#4a4a4a] dark:text-[#b8b6b3] my-5 sm:my-7",
   },
   code: {
     className: "my-4 sm:my-6",
@@ -30,9 +30,9 @@ const config = {
   image: {
     className: "my-7 sm:my-9",
     actionsClassNames: {
-      stretched: "w-full",
-      withBorder: "border border-[#d0cdc8] dark:border-[#3a3d41] rounded-md",
-      withBackground: "p-3 sm:p-4 bg-[#f7f5f2] dark:bg-[#26292d] rounded-md",
+      stretched: "image-block--stretched",
+      withBorder: "image-block--with-border",
+      withBackground: "image-block--with-background",
     },
   },
   embed: {

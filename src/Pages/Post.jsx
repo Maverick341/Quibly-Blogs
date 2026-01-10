@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  ChevronsUpDown,
-  Share2,
-  MoreVertical,
-} from "lucide-react";
+import { ChevronsUpDown, Share2, MoreVertical } from "lucide-react";
 import postService from "@/appwrite/post";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, EditorOutput } from "@/Components";
@@ -126,7 +122,7 @@ export default function Post() {
 
   return post ? (
     <article className="min-h-screen bg-[#f5f3f0] dark:bg-[#2a2d31] pb-8 sm:pb-12 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         {/* Featured Image first */}
         <figure
           className={`relative mt-6 sm:mt-8 mb-6 sm:mb-10 rounded-lg sm:rounded-xl overflow-hidden shadow-auth-light dark:shadow-auth-dark bg-[#f7f5f2] dark:bg-[#26292d] border border-[#dcd8d0] dark:border-[#3f4347]`}
@@ -186,7 +182,8 @@ export default function Post() {
             <div
               className="bg-[#f5f4f0] dark:bg-[#2a2d31]
                         text-[#2a2a2a] dark:text-[#e8e6e3]
-                        
+                        border-l border-r border-t border-[#d0cdc8] dark:border-[#3a3d41]
+                        rounded-t-lg
                         px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6
                         relative
                         min-h-[300px] sm:min-h-[400px]"
@@ -259,7 +256,11 @@ export default function Post() {
                                 : "text-[#5cb85c] dark:text-[#51cf66]"
                             }`}
                           >
-                            <span className="text-left">{post.status === "active" ? "Move to Trash" : "Restore"}</span>
+                            <span className="text-left">
+                              {post.status === "active"
+                                ? "Move to Trash"
+                                : "Restore"}
+                            </span>
                           </button>
                         </Link>
                       </div>
